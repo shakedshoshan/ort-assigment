@@ -43,7 +43,10 @@ def get_student_service() -> StudentService:
     """Get student service instance."""
     return StudentService()
 
-# Request body model for answer submission
+# Request body models
+class QuestionAccess(BaseModel):
+    student_id: str = Field(..., description="Student ID")
+
 class AnswerSubmission(BaseModel):
     access_code: str = Field(..., description="Question access code")
     student_id: str = Field(..., description="Student ID")
@@ -51,10 +54,10 @@ class AnswerSubmission(BaseModel):
 
 # Student endpoints
 
-@router.get("/question/{access_code}", status_code=status.HTTP_200_OK)
+@router.post("/question/{access_code}", status_code=status.HTTP_200_OK)
 async def get_question_by_code(
     access_code: str = Path(..., description="Question access code"),
-    student_id: str = Query(..., description="Student ID"),
+    request_data: QuestionAccess = Body(..., description="Student ID in request body"),
     db: Session = Depends(get_db),
     question_service: QuestionService = Depends(get_question_service),
     student_service: StudentService = Depends(get_student_service)
@@ -63,8 +66,8 @@ async def get_question_by_code(
     Identify and retrieve a question for answering.
     
     Args:
-        access_code: Question access code
-        student_id: Student ID
+        access_code: Question access code (from URL path)
+        request_data: Student ID in request body
         
     Returns:
         Question details
@@ -74,10 +77,10 @@ async def get_question_by_code(
     """
     try:
         # Validate student ID
-        if not student_service.validate_student_id(student_id):
+        if not student_service.validate_student_id(request_data.student_id):
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
-                detail=f"Student with ID '{student_id}' not found"
+                detail=f"Student with ID '{request_data.student_id}' not found"
             )
         
         # Get question
@@ -91,7 +94,7 @@ async def get_question_by_code(
         # Return question with student context
         return {
             **question,
-            "student_id": student_id
+            "student_id": request_data.student_id
         }
     except HTTPException as e:
         # Re-raise the exception

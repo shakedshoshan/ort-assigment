@@ -4,8 +4,9 @@ This module handles all question-related API operations.
 """
 
 from typing import List, Dict, Any, Optional
-from fastapi import APIRouter, Depends, HTTPException, Path, Query, status
+from fastapi import APIRouter, Depends, HTTPException, Path, Query, status, Body
 from sqlalchemy.orm import Session
+from pydantic import BaseModel, Field
 
 try:
     from app.database.config import get_db
@@ -23,6 +24,12 @@ except ImportError:
 # Create router for questions endpoints
 router = APIRouter()
 
+# Request body models
+class QuestionCreate(BaseModel):
+    title: str = Field(..., description="Question title")
+    text: str = Field(..., description="Question text")
+    access_code: str = Field(..., description="Unique access code for the question")
+
 # Dependency to get question service
 def get_question_service() -> QuestionService:
     """Get question service instance."""
@@ -32,9 +39,7 @@ def get_question_service() -> QuestionService:
 
 @router.post("/open", status_code=status.HTTP_201_CREATED)
 async def create_question(
-    title: str,
-    text: str,
-    access_code: str,
+    question_data: QuestionCreate,
     db: Session = Depends(get_db),
     service: QuestionService = Depends(get_question_service)
 ) -> Dict[str, Any]:
@@ -42,9 +47,7 @@ async def create_question(
     Create and open a new question.
     
     Args:
-        title: Question title
-        text: Question text
-        access_code: Unique access code for the question
+        question_data: Question creation data (title, text, access_code)
         
     Returns:
         Created question
@@ -53,12 +56,17 @@ async def create_question(
         HTTPException: If access_code already exists
     """
     try:
-        question_id = service.create_question(db, title, text, access_code)
+        question_id = service.create_question(
+            db, 
+            question_data.title, 
+            question_data.text, 
+            question_data.access_code
+        )
         return {
             "id": question_id,
-            "title": title,
-            "text": text,
-            "access_code": access_code,
+            "title": question_data.title,
+            "text": question_data.text,
+            "access_code": question_data.access_code,
             "is_closed": False,
             "message": "Question created successfully"
         }
