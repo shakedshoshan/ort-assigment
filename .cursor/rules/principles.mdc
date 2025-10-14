@@ -1,3 +1,10 @@
 ---
-alwaysApply: true
+alwaysApply: false
 ---
+1. Simple code without unnecessary functionality
+
+2. Document key parts of the system
+
+3. Document any additions to the code in the main readme file README.md
+
+4. Readable and modular code that you can ask questions about

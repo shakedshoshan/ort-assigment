@@ -1,0 +1,53 @@
+[tool.poetry]
+name = "ort-assignment-backend"
+version = "1.0.0"
+description = "A simple FastAPI server for the ORT assignment project"
+authors = ["Your Name <your.email@example.com>"]
+readme = "README.md"
+packages = [{include = "app"}]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+fastapi = "^0.104.1"
+uvicorn = {extras = ["standard"], version = "^0.24.0"}
+pydantic = "^2.5.0"
+python-multipart = "^0.0.6"
+requests = "^2.31.0"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^7.4.3"
+pytest-asyncio = "^0.21.1"
+black = "^23.11.0"
+isort = "^5.12.0"
+flake8 = "^6.1.0"
+
+[tool.poetry.scripts]
+dev = "app.main:run_dev"
+start = "app.main:run_prod"
+test = "pytest tests/"
+lint = "black app/ && isort app/ && flake8 app/"
+format = "black app/ && isort app/"
+
+# Poetry virtual environment configuration
+[tool.poetry.virtualenvs]
+create = true
+in-project = true
+path = ".venv"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.black]
+line-length = 88
+target-version = ['py38']
+
+[tool.isort]
+profile = "black"
+multi_line_output = 3
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
