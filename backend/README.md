@@ -14,13 +14,30 @@ backend/
 │   │   ├── api.py             # Main API router
 │   │   └── endpoints/
 │   │       ├── __init__.py
-│   │       └── students.py    # Student endpoints
+│   │       ├── students.py    # Student endpoints
+│   │       ├── questions.py   # Question endpoints (teacher)
+│   │       └── answers.py     # Answer endpoints (student)q
+│   ├── database/
+│   │   ├── __init__.py
+│   │   ├── config.py          # Database configuration
+│   │   ├── models/
+│   │   │   ├── __init__.py
+│   │   │   ├── base.py        # Base model class
+│   │   │   ├── question.py    # Question database model
+│   │   │   └── answer.py      # Answer database model
+│   │   └── repositories/
+│   │       ├── __init__.py
+│   │       ├── base.py        # Base repository class
+│   │       ├── question_repository.py # Question repository
+│   │       └── answer_repository.py   # Answer repository
 │   ├── models/
 │   │   ├── __init__.py
-│   │   └── student.py         # Student data models
+│   │   └── student.py         # Student Pydantic models
 │   └── services/
 │       ├── __init__.py
-│       └── student_service.py # Student business logic
+│       ├── student_service.py # Student business logic
+│       ├── question_service.py # Question business logic
+│       └── answer_service.py   # Answer business logic
 ├── requirements.txt           # Python dependencies
 └── README.md                 # This file
 ```
@@ -30,10 +47,15 @@ backend/
 - **FastAPI Framework**: Modern, fast web framework for building APIs
 - **Pydantic Models**: Data validation and serialization
 - **Modular Structure**: Organized code with clear separation of concerns
-- **CRUD Operations**: Full Create, Read, Update, Delete operations for students
-- **JSON Data Storage**: Uses the existing `data/students.json` file
+- **CRUD Operations**: Full Create, Read, Update, Delete operations for all entities
+- **SQLite Database**: Persistent SQLite database with SQLAlchemy ORM
+- **Database Migrations**: Alembic support for database schema management
+- **Repository Pattern**: Clean separation between database and business logic
 - **CORS Support**: Cross-Origin Resource Sharing enabled
 - **Auto Documentation**: Automatic OpenAPI/Swagger documentation
+- **Classroom Q&A System**: Complete question and answer functionality
+- **Role-Based API**: Separate endpoints for teachers and students
+- **Data Validation**: Comprehensive business logic validation
 
 ## API Endpoints
 
@@ -42,6 +64,17 @@ backend/
 - `GET /api/v1/students/` - Get all students
 - `GET /api/v1/students/{student_id}` - Get a specific student
 
+### Questions API (`/api/v1/questions`) - Teacher Endpoints
+
+- `POST /api/v1/questions/open` - Create and open a new question
+- `PATCH /api/v1/questions/{question_id}/close` - Close an existing question
+- `GET /api/v1/questions/` - Retrieve a list of questions (optional status filter)
+- `GET /api/v1/questions/{question_id}/answers` - View all submitted answers for a question
+
+### Answers API (`/api/v1/answers`) - Student Endpoints
+
+- `GET /api/v1/answers/question/{access_code}` - Identify and retrieve a question for answering
+- `POST /api/v1/answers/submit` - Submit a new answer or update an existing answer
 
 ### General Endpoints
 
@@ -125,16 +158,69 @@ uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
 
 ## Data Storage
 
-The application uses the existing `data/students.json` file for data storage. The service layer handles all file operations, ensuring data persistence across server restarts.
+The application now uses **SQLite database** with SQLAlchemy ORM for data persistence. The database is automatically initialized when the application starts.
+
+### Database Structure
+
+- **SQLite Database**: Local file-based database (`app.db`)
+- **SQLAlchemy ORM**: Object-Relational Mapping for database operations
+- **Repository Pattern**: Clean separation between database and business logic
+- **Alembic Support**: Database migration management (ready for future use)
+
+### Database Models
+
+- **Base Model**: Common base class for all database models
+- **Question Model**: SQLAlchemy model for questions with title, text, access code, and status
+- **Answer Model**: SQLAlchemy model for answers with question reference, student ID, and text
+- **Repository Classes**: Handle database operations with proper separation of concerns
+
+### Environment Configuration
+
+You can configure the database URL using the `DATABASE_URL` environment variable:
+
+```bash
+# Default SQLite database
+DATABASE_URL="sqlite:///./app.db"
+
+# For production, you can use PostgreSQL, MySQL, etc.
+DATABASE_URL="postgresql://user:password@localhost/dbname"
+```
 
 ## Development
 
 The project follows FastAPI best practices:
 
-- **Models**: Pydantic models for data validation
+- **Models**: Pydantic models for data validation and SQLAlchemy models for database operations
 - **Services**: Business logic separated from API endpoints
+- **Repositories**: Database operations separated from business logic
 - **Endpoints**: Clean, focused API route handlers
-- **Dependency Injection**: FastAPI's dependency system for service management
+- **Dependency Injection**: FastAPI's dependency system for service and database management
+- **Database Configuration**: Centralized database setup with environment variable support
+- **Clean Architecture**: Layered architecture with clear separation of concerns
+- **HTTP Status Codes**: Appropriate status codes for different scenarios
+- **Error Handling**: Consistent error responses with meaningful messages
+
+### Classroom Q&A Architecture
+
+The classroom Q&A system is built with a clean, layered architecture:
+
+1. **API Layer** (`endpoints/`):
+   - `questions.py` - Teacher endpoints for managing questions
+   - `answers.py` - Student endpoints for submitting answers
+
+2. **Service Layer** (`services/`):
+   - `question_service.py` - Business logic for questions
+   - `answer_service.py` - Business logic for answers
+
+3. **Repository Layer** (`repositories/`):
+   - `question_repository.py` - Database operations for questions
+   - `answer_repository.py` - Database operations for answers
+
+4. **Data Layer** (`models/`):
+   - `question.py` - SQLAlchemy model for questions
+   - `answer.py` - SQLAlchemy model for answers
+
+This architecture ensures separation of concerns, making the code more maintainable and testable.
 
 ## API Documentation
 

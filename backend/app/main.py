@@ -6,12 +6,28 @@ This is the entry point for the FastAPI server.
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+# Import database configuration with fallback for direct execution
+try:
+    from app.database.config import create_tables
+except ImportError:
+    # Fallback for direct execution
+    import sys
+    import os
+    sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    from app.database.config import create_tables
+
 # Create FastAPI application instance
 app = FastAPI(
     title="ORT Assignment API",
-    description="A simple FastAPI server for the ORT assignment",
+    description="A simple FastAPI server for the ORT assignment with SQLite database",
     version="1.0.0"
 )
+
+# Initialize database tables on startup
+@app.on_event("startup")
+async def startup_event():
+    """Initialize database tables on application startup."""
+    create_tables()
 
 # Add CORS middleware
 app.add_middleware(

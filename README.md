@@ -57,20 +57,33 @@ uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
 ### API Features
 
 - **Student Management**: Full CRUD operations for student data
-- **JSON Storage**: Uses the existing `data/students.json` file
+- **Classroom Q&A System**: Complete question and answer functionality
+- **SQLite Database**: Persistent storage with SQLAlchemy ORM
+- **Role-Based API**: Separate endpoints for teachers and students
 - **Auto Documentation**: Interactive Swagger UI and ReDoc documentation
 - **CORS Support**: Cross-origin requests enabled
 - **Data Validation**: Pydantic models for request/response validation
+- **Business Logic**: Comprehensive validation and error handling
 
 ### API Endpoints
 
+#### General Endpoints
 - `GET /` - Welcome message
 - `GET /health` - Health check
+
+#### Student Management
 - `GET /api/v1/students/` - Get all students
 - `GET /api/v1/students/{id}` - Get specific student
-- `POST /api/v1/students/` - Create new student
-- `PUT /api/v1/students/{id}` - Update student
-- `DELETE /api/v1/students/{id}` - Delete student
+
+#### Teacher Endpoints (Questions)
+- `POST /api/v1/questions/open` - Create and open a new question
+- `PATCH /api/v1/questions/{question_id}/close` - Close an existing question
+- `GET /api/v1/questions/` - Retrieve a list of questions (optional status filter)
+- `GET /api/v1/questions/{question_id}/answers` - View all submitted answers for a question
+
+#### Student Endpoints (Answers)
+- `GET /api/v1/answers/question/{access_code}` - Identify and retrieve a question for answering
+- `POST /api/v1/answers/submit` - Submit a new answer or update an existing answer
 
 ## Development Principles
 
@@ -85,7 +98,34 @@ This project follows these key principles:
 
 - **FastAPI**: Modern Python web framework for building APIs
 - **Pydantic**: Data validation and serialization
+- **SQLAlchemy**: SQL toolkit and Object-Relational Mapper
+- **SQLite**: Lightweight disk-based database
 - **Uvicorn**: ASGI server for running the FastAPI application
-- **JSON**: Simple file-based data storage
+
+## Classroom Q&A System Architecture
+
+The classroom Q&A system follows a clean, layered architecture:
+
+### 1. API Layer (Endpoints)
+- **Teacher Endpoints**: Create questions, close questions, view answers
+- **Student Endpoints**: View questions, submit answers
+
+### 2. Service Layer (Business Logic)
+- **QuestionService**: Manages question creation, retrieval, and status
+- **AnswerService**: Handles answer submission and validation
+
+### 3. Repository Layer (Data Access)
+- **QuestionRepository**: Database operations for questions
+- **AnswerRepository**: Database operations for answers
+
+### 4. Data Layer (Models)
+- **Question Model**: Represents questions in the database
+- **Answer Model**: Represents answers in the database
+
+This architecture ensures:
+- Separation of concerns
+- Testability
+- Maintainability
+- Clear business logic boundaries
 
 For detailed backend documentation, see [backend/README.md](backend/README.md).
