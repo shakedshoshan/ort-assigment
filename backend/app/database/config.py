@@ -4,18 +4,73 @@ Contains database connection settings and configuration for SQLAlchemy.
 """
 
 import os
+from pathlib import Path
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-# Database URL - using SQLite for simplicity
-# You can change this to use environment variables for production
-DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./app.db")
+# Database configuration with environment variable support
+def get_database_path() -> str:
+    """
+    Get the database file path from environment variable or use default.
+    Handles Windows paths with backslashes and spaces properly.
+    
+    Returns:
+        str: Path to the SQLite database file
+    """
+    database_path = os.getenv("DATABASE_PATH", "./app.db")
+    
+    # Convert to Path object for better handling
+    db_path = Path(database_path)
+    
+    # Always ensure the directory exists
+    db_dir = db_path.parent
+    db_dir.mkdir(parents=True, exist_ok=True)
+    
+    # Print debug info to help troubleshoot
+    print(f"Database path: {db_path}")
+    print(f"Database directory: {db_dir}")
+    print(f"Directory exists: {db_dir.exists()}")
+    print(f"Directory is writable: {os.access(db_dir, os.W_OK)}")
+    
+    # Return absolute path to avoid issues with relative paths
+    return str(db_path.absolute())
 
-# Create SQLAlchemy engine
+def build_database_url(database_path: str) -> str:
+    """
+    Build SQLite database URL from file path.
+    Handles Windows paths properly by converting to forward slashes.
+    
+    Args:
+        database_path: Path to the database file
+        
+    Returns:
+        str: SQLite database URL
+    """
+    # Convert Windows backslashes to forward slashes for SQLite URL
+    normalized_path = str(Path(database_path)).replace('\\', '/')
+    
+    # Ensure path starts with / for absolute paths
+    if not normalized_path.startswith('/'):
+        normalized_path = '/' + normalized_path
+    
+    return f"sqlite://{normalized_path}"
+
+# Build database URL from path
+DATABASE_PATH = get_database_path()
+DATABASE_URL = build_database_url(DATABASE_PATH)
+
+# Print debug info
+print(f"Final database URL: {DATABASE_URL}")
+
+# Create SQLAlchemy engine with optimized settings
 engine = create_engine(
     DATABASE_URL,
-    connect_args={"check_same_thread": False} if "sqlite" in DATABASE_URL else {},
-    echo=True  # Set to False in production
+    connect_args={
+        "check_same_thread": False,
+        "timeout": 20,  # Increase timeout for slow operations
+    } if "sqlite" in DATABASE_URL else {},
+    echo=False,  # Disable echo to improve performance
+    pool_pre_ping=True,  # Verify connections before use
 )
 
 # Create SessionLocal class

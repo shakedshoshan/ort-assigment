@@ -176,15 +176,27 @@ The application now uses **SQLite database** with SQLAlchemy ORM for data persis
 
 ### Environment Configuration
 
-You can configure the database URL using the `DATABASE_URL` environment variable:
+You can configure the database using environment variables:
 
 ```bash
-# Default SQLite database
-DATABASE_URL="sqlite:///./app.db"
+# SQLite Database Path (recommended for SQLite)
+# Controls where the SQLite database file is saved
 
-# For production, you can use PostgreSQL, MySQL, etc.
-DATABASE_URL="postgresql://user:password@localhost/dbname"
-```
+# Windows Examples:
+DATABASE_PATH="C:\Users\shake\Desktop\Builds\database.db"  # Windows absolute path
+DATABASE_PATH="./app.db"                                   # Relative path (default)
+
+
+**Note**: When using `DATABASE_PATH`, the application automatically creates the directory if it doesn't exist.
+
+### Troubleshooting Database Path Issues
+
+If you experience slow database operations or errors with custom paths:
+
+1. **Use absolute paths**: `DATABASE_PATH="C:\Users\shake\Desktop\Builds\database.db"`
+2. **Avoid spaces in directory names**: Use `C:\Users\shake\Desktop\Builds` instead of `C:\Users\shake\Desktop\Builds (Copy)`
+3. **Ensure directory permissions**: Make sure the application has write access to the target directory
+4. **Use forward slashes**: The application automatically converts Windows backslashes to forward slashes for SQLite URLs
 
 ## Development
 
