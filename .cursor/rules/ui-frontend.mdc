@@ -1,0 +1,125 @@
+---
+alwaysApply: false
+---
+# UI Frontend Rules
+
+## 🎨 Design Principles
+- Use clear visual hierarchy with proper heading sizes (h1-h6)
+- Apply consistent spacing using the custom theme spacing scale
+- Use color contrast ratios that meet WCAG 2.1 AA standards
+
+## 🎨 Color Usage
+- **Primary colors** (`primary-*`) for main actions, links, and important elements
+- **Secondary colors** (`secondary-*`) for supporting content and subtle elements
+- **Success colors** (`success-*`) for positive feedback and confirmations
+- **Warning colors** (`warning-*`) for caution states and pending actions
+- **Error colors** (`error-*`) for error messages and destructive actions
+- **Neutral colors** (`neutral-*`) for text, backgrounds, and borders
+
+## 🧩 Component Guidelines
+
+### Buttons
+- Always use semantic button classes: `btn btn-primary`, `btn btn-secondary`, etc.
+- Include appropriate sizes: `btn-sm`, `btn-lg`, `btn-xl`
+- Add loading states with `loading` or `loading-spinner` classes
+
+### Cards
+- Use `card` for basic containers
+- Apply `card-elevated` for important content
+- Use `card-interactive` for clickable elements with hover effects
+
+### Forms
+- Use `form-input`, `form-textarea`, `form-select` for form elements
+- Apply `form-label` for all form labels
+- Include `form-error` and `form-help` for validation and guidance
+
+### Navigation
+- Use `nav-link` for navigation items
+- Apply `nav-link-active` for current page indicators
+
+## 🎭 Animation & Interactions
+- Use subtle animations: `animate-fade-in`, `animate-slide-up`, `animate-scale-in`
+- Apply animations sparingly to avoid overwhelming users
+- Use `transition-all duration-200` for smooth hover effects
+
+## 📱 Responsive Design
+- Design for mobile devices first, then scale up
+- Use responsive breakpoints: `sm:`, `md:`, `lg:`, `xl:`, `2xl:`
+- Apply `container-custom` for consistent container widths
+- Use `section-padding` for consistent vertical spacing
+
+## ♿ Accessibility Requirements
+- Use proper HTML semantic elements (header, main, section, article, nav, footer)
+- Apply appropriate ARIA labels and roles
+- Ensure proper heading hierarchy (h1 → h2 → h3)
+- Use `sr-only` class for screen reader only content
+- Ensure all interactive elements are keyboard accessible
+- Use `focus-visible` class for focus indicators
+
+## 🎯 User Experience Patterns
+- Show loading indicators for async operations
+- Use `loading` class for skeleton loading
+- Apply `loading-spinner` for specific loading animations
+- Display user-friendly error messages
+- Use `alert alert-error` for error notifications
+- Confirm successful actions with `alert alert-success`
+- Use `badge badge-success` for status indicators
+
+## 🧪 Code Quality Standards
+- Use the custom theme classes instead of arbitrary values
+- Apply consistent spacing patterns
+- Maintain uniform component styling
+- Use semantic class names that describe purpose
+
+## 🎨 Visual Design Rules
+- Use the 8px grid system (4, 8, 12, 16, 20, 24, 32, 40, 48, 64, 80, 96)
+- Apply consistent margins and padding
+- Use `space-x-*` and `space-y-*` for element spacing
+- Use `shadow-soft` for subtle elevation
+- Apply `shadow-medium` for important content
+- Use `shadow-hard` for modals and overlays
+- Use consistent border radius: `rounded-lg`, `rounded-xl`, `rounded-2xl`
+
+## 🚀 Implementation Guidelines
+
+### Always Use Theme Classes
+```jsx
+// ✅ Good: Using theme classes
+<button className="btn btn-primary btn-lg">Submit</button>
+<div className="card card-interactive">Content</div>
+
+// ❌ Bad: Using arbitrary values
+<button className="bg-blue-500 px-4 py-2 rounded">Submit</button>
+<div className="bg-white p-4 shadow">Content</div>
+```
+
+### Consistent Component Patterns
+```jsx
+// ✅ Good: Consistent card pattern
+<div className="card">
+  <div className="flex items-center mb-4">
+    <div className="w-12 h-12 bg-primary-100 rounded-lg flex items-center justify-center">
+      <Icon className="text-primary-600" />
+    </div>
+    <div className="ml-4">
+      <h3 className="text-lg font-semibold text-neutral-900">Title</h3>
+      <p className="text-neutral-600">Description</p>
+    </div>
+  </div>
+  <div className="flex space-x-2">
+    <button className="btn btn-primary btn-sm">Action</button>
+  </div>
+</div>
+```
+
+### Responsive Design Implementation
+```jsx
+// ✅ Good: Responsive grid layout
+<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+  {items.map(item => (
+    <ItemCard key={item.id} item={item} />
+  ))}
+</div>
+```
+
+Remember: Every UI component should be beautiful, accessible, responsive, and user-friendly. Use the custom theme classes consistently and follow these guidelines to create exceptional user experiences.
