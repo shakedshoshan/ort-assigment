@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { type Question, type QuestionAccess, type AnswerSubmission, type AnswerResponse } from '../types/index';
 
-const API_BASE_URL = 'http://localhost:8000/api/answers';
+const API_BASE_URL = 'http://localhost:8000/api/v1/answers';
 
 /**
  * Hook to get a question by its access code
