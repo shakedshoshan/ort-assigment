@@ -1,12 +1,21 @@
 import { Link } from 'react-router-dom';
 import { type Question } from '../../types/question';
+import { DeleteButton } from '../ui';
 
 interface QuestionCardProps {
   question: Question;
   showActions?: boolean;
+  onDelete?: (questionId: number) => void;
+  isDeleting?: boolean;
 }
 
-export function QuestionCard({ question, showActions = true }: QuestionCardProps) {
+export function QuestionCard({ question, showActions = true, onDelete, isDeleting = false }: QuestionCardProps) {
+  const handleDelete = () => {
+    if (onDelete) {
+      onDelete(question.id);
+    }
+  };
+
   return (
     <div className="card card-interactive">
       <div className="flex items-start justify-between">
@@ -30,12 +39,22 @@ export function QuestionCard({ question, showActions = true }: QuestionCardProps
           </div>
         </div>
         {showActions && (
-          <Link
-            to={`/teacher/questions/${question.id}`}
-            className="btn btn-primary btn-sm"
-          >
-            View Details
-          </Link>
+          <div className="flex items-center space-x-2">
+            <Link
+              to={`/teacher/questions/${question.id}`}
+              className="btn btn-primary btn-sm"
+            >
+              View Details
+            </Link>
+            {onDelete && (
+              <DeleteButton
+                onDelete={handleDelete}
+                isDeleting={isDeleting}
+                size="sm"
+                confirmMessage="Are you sure you want to delete this question? This action cannot be undone."
+              />
+            )}
+          </div>
         )}
       </div>
     </div>

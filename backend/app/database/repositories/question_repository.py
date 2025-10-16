@@ -66,3 +66,21 @@ class QuestionRepository(BaseRepository[Question]):
             db.commit()
             db.refresh(question)
         return question
+    
+    def delete_question(self, db: Session, question_id: int) -> bool:
+        """
+        Delete a question by ID.
+        
+        Args:
+            db: Database session
+            question_id: Question ID to delete
+            
+        Returns:
+            True if deleted successfully, False otherwise
+        """
+        question = self.get(db, question_id)
+        if question:
+            db.delete(question)
+            db.commit()
+            return True
+        return False

@@ -168,6 +168,44 @@ export const useQuestionWithAnswers = (questionId: number) => {
 };
 
 /**
+ * Hook to delete an existing question
+ * @returns {Object} deleteQuestion function, loading state, and error state
+ */
+export const useDeleteQuestion = () => {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const deleteQuestion = async (questionId: number): Promise<QuestionResponse | null> => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await fetch(`${API_BASE_URL}/${questionId}`, {
+        method: 'DELETE',
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.detail || `HTTP error! status: ${response.status}`);
+      }
+      
+      const data: QuestionResponse = await response.json();
+      return data;
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'An error occurred');
+      return null;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return {
+    deleteQuestion,
+    loading,
+    error
+  };
+};
+
+/**
  * @deprecated Use useQuestionWithAnswers instead
  * Hook to fetch answers for a specific question
  * @param {number} questionId - The ID of the question to get answers for

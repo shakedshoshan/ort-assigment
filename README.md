@@ -260,6 +260,7 @@ uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
 #### Teacher Endpoints (Questions)
 - `POST /api/v1/questions/open` - Create and open a new question
 - `PATCH /api/v1/questions/{question_id}/close` - Close an existing question
+- `DELETE /api/v1/questions/{question_id}` - Delete an existing question
 - `GET /api/v1/questions/` - Retrieve a list of questions (optional status filter)
 - `GET /api/v1/questions/{question_id}/answers` - View all submitted answers for a question
 

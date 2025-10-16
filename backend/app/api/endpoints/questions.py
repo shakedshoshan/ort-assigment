@@ -209,6 +209,47 @@ async def get_question_with_answers(
             detail=f"Failed to retrieve question with answers: {str(e)}"
         )
 
+@router.delete("/{question_id}", status_code=status.HTTP_200_OK)
+async def delete_question(
+    question_id: int = Path(..., title="Question ID", description="ID of the question to delete"),
+    db: Session = Depends(get_db),
+    service: QuestionService = Depends(get_question_service)
+) -> Dict[str, Any]:
+    """
+    Delete an existing question.
+    
+    Args:
+        question_id: ID of the question to delete
+        
+    Returns:
+        Success message
+        
+    Raises:
+        HTTPException: If question not found
+    """
+    try:
+        # Delete the question
+        success = service.delete_question(db, question_id)
+        if not success:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Failed to delete question"
+            )
+        
+        return {
+            "id": question_id,
+            "message": "Question deleted successfully"
+        }
+    except HTTPException as e:
+        # Re-raise the exception
+        raise e
+    except Exception as e:
+        # Handle unexpected errors
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to delete question: {str(e)}"
+        )
+
 # Import here to avoid circular imports
 def get_answer_service():
     """Get answer service instance."""

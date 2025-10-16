@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useQuestions } from '../../hooks/useQuestions';
+import { useQuestions, useDeleteQuestion } from '../../hooks/useQuestions';
 import { type Question } from '../../types/question';
 import { StatsCard } from '../../components/cards';
 import { QuestionCard } from '../../components/cards';
@@ -7,12 +7,14 @@ import { QuestionForm } from '../../components/forms';
 
 export default function TeacherDashboard() {
   const { questions, loading, error, refetch } = useQuestions();
+  const { deleteQuestion, error: deleteError } = useDeleteQuestion();
   const [stats, setStats] = useState({
     totalQuestions: 0,
     totalOpenQuestions: 0,
     totalClosedQuestions: 0,
   });
   const [showCreateForm, setShowCreateForm] = useState(false);
+  const [deletingQuestionId, setDeletingQuestionId] = useState<number | null>(null);
 
   useEffect(() => {
     if (questions) {
@@ -36,6 +38,23 @@ export default function TeacherDashboard() {
     setShowCreateForm(false);
   };
 
+  const handleDeleteQuestion = async (questionId: number) => {
+    setDeletingQuestionId(questionId);
+    try {
+      const result = await deleteQuestion(questionId);
+      if (result) {
+        // Show success message
+        // You could add a toast notification here
+        refetch(); // Refresh the questions list
+      }
+    } catch (err) {
+      // Error is handled by the hook
+      console.error('Failed to delete question:', err);
+    } finally {
+      setDeletingQuestionId(null);
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center py-12">
@@ -48,6 +67,20 @@ export default function TeacherDashboard() {
     return (
       <div className="alert alert-error">
         <p>Error loading questions: {error}</p>
+      </div>
+    );
+  }
+
+  if (deleteError) {
+    return (
+      <div className="alert alert-error">
+        <p>Error deleting question: {deleteError}</p>
+        <button 
+          onClick={() => window.location.reload()} 
+          className="btn btn-sm btn-outline mt-2"
+        >
+          Retry
+        </button>
       </div>
     );
   }
@@ -114,6 +147,8 @@ export default function TeacherDashboard() {
                 key={question.id}
                 question={question}
                 showActions={true}
+                onDelete={handleDeleteQuestion}
+                isDeleting={deletingQuestionId === question.id}
               />
             ))}
           </div>

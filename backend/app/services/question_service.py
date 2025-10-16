@@ -138,6 +138,27 @@ class QuestionService:
         updated_question = self.question_repo.update_status(db, question_id, True)
         return updated_question is not None
     
+    def delete_question(self, db, question_id: int) -> bool:
+        """
+        Deletes a question by ID.
+        Checks if the question exists before attempting deletion.
+        
+        Args:
+            db: Database session
+            question_id: Question ID to delete
+            
+        Returns:
+            True if deleted successfully, False otherwise
+            
+        Raises:
+            HTTPException: If question not found
+        """
+        # Check if question exists
+        self.get_question_by_id(db, question_id)
+        
+        # Delete the question
+        return self.question_repo.delete_question(db, question_id)
+    
     def _question_to_dict(self, question) -> Dict[str, Any]:
         """
         Convert SQLAlchemy question object to dictionary.
