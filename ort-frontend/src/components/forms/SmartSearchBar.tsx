@@ -18,6 +18,19 @@ export default function SmartSearchBar({
   const { smartSearch, loading: searchLoading, error: searchError } = useSmartSearch();
   const [searchQuery, setSearchQuery] = useState('');
   const [isSearching, setIsSearching] = useState(false);
+  
+  // Quick search suggestions
+  const searchSuggestions = [
+    'general knowledge',
+    'geography',
+    'mathematics', 
+    'science',
+    'history',
+    'literature',
+    'capital cities',
+    'math problems',
+    'science questions'
+  ];
 
   const handleSearch = async () => {
     if (!searchQuery.trim() || searchableQuestions.length === 0) {
@@ -64,7 +77,7 @@ export default function SmartSearchBar({
       <label htmlFor="smartSearch" className="form-label text-neutral-700">
         Smart Search
         <span className="ml-1 text-sm text-neutral-500">
-          (e.g., "Find questions about sustainability and environmental quality")
+          (e.g., "geography", "math problems", "science questions", "history")
         </span>
       </label>
       
@@ -108,6 +121,25 @@ export default function SmartSearchBar({
       {searchError && (
         <div className="alert alert-error mt-2" role="alert">
           <p>Search failed: {searchError}</p>
+        </div>
+      )}
+      
+      {/* Search suggestions */}
+      {!searchQuery && !isSearching && (
+        <div className="mt-2">
+          <p className="text-sm text-neutral-600 mb-2">Try searching for:</p>
+          <div className="flex flex-wrap gap-2">
+            {searchSuggestions.map((suggestion) => (
+              <button
+                key={suggestion}
+                onClick={() => setSearchQuery(suggestion)}
+                className="btn btn-sm btn-outline"
+                disabled={disabled}
+              >
+                {suggestion}
+              </button>
+            ))}
+          </div>
         </div>
       )}
     </div>

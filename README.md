@@ -4,14 +4,22 @@ This project contains a FastAPI backend server and a React TypeScript frontend f
 
 ## Recent Updates
 
-**AI Smart Search Feature** (Latest): Added semantic search capability that allows teachers to find relevant questions using natural language queries. The feature uses OpenAI's language models to understand the meaning behind search queries and return the most relevant question IDs.
+**Enhanced AI Smart Search Feature** (Latest): Significantly improved the semantic search capability with a more intelligent architecture that better understands educational context and subject matter relationships.
 
 **Key Improvements**:
-- New `/api/v1/ai/smart-search` endpoint for semantic question search
-- Enhanced AI service architecture with base class for common functionality
-- Optimized OpenAI API integration with JSON response format
-- Frontend SmartSearchBar component with intuitive UI
-- Comprehensive documentation and error handling
+- **Two-Stage AI Processing**: First extracts concepts from user queries, then uses enhanced context for better matching
+- **Subject-Aware Matching**: Automatically categorizes questions by subject area (geography, mathematics, science, etc.)
+- **Enhanced Question Processing**: Questions now include subject hints based on content analysis for better semantic matching
+- **Smarter AI Prompts**: Context-aware prompts that understand educational relationships (e.g., "geography" → "capital of France")
+- **Improved User Experience**: Added search suggestions, better examples, and enhanced error handling
+- **Conceptual Understanding**: AI now understands that "geography" should match questions about countries, capitals, maps, etc.
+
+**Technical Enhancements**:
+- New concept extraction system that analyzes search queries for subject areas and related terms
+- Enhanced question text processing with automatic subject categorization
+- Improved AI prompts with educational context and matching rules
+- Better error handling and logging for debugging
+- Optimized search suggestions and user guidance
 
 ## Project Structure
 
@@ -247,11 +255,13 @@ The `SmartSearchBar` component provides an intuitive interface for teachers to p
 
 **Features**:
 - **Natural Language Input**: Teachers can type conversational search queries
+- **Search Suggestions**: Pre-built suggestions for common search terms (geography, mathematics, science, etc.)
 - **Real-time Search**: Instant search execution with loading indicators
 - **Error Handling**: Comprehensive error display with user-friendly messages
 - **Clear Functionality**: Easy way to reset search and return to all questions
 - **Accessibility**: Full keyboard navigation and screen reader support
 - **Responsive Design**: Works seamlessly on all device sizes
+- **Enhanced Examples**: Clear examples showing how to search by subject area
 
 **Props**:
 ```typescript
@@ -294,6 +304,8 @@ The Smart Search feature is seamlessly integrated into the Teacher Dashboard, pr
 
 **Key Features**:
 - **Intuitive Interface**: Search bar with helpful placeholder text and examples
+- **Search Suggestions**: Quick access to common search terms with clickable buttons
+- **Enhanced Question Processing**: Questions automatically include subject hints for better matching
 - **Real-time Feedback**: Loading indicators and success/error messages
 - **Smart Filtering**: Only shows relevant questions based on semantic matching
 - **Easy Reset**: One-click clear search to return to all questions
@@ -432,12 +444,15 @@ The AI smart search service enables teachers to perform semantic searches across
 - **Intelligent Ranking**: Returns the most relevant questions (1-3 matches)
 - **Flexible Search**: Works with partial information or related concepts
 - **Fast Results**: Quick response times for efficient question discovery
+- **Enhanced Question Processing**: Questions include subject hints for better matching
+- **Search Suggestions**: Pre-built suggestions for common search terms
 
 **Usage Examples**:
-- "Find questions about environmental impact and sustainability"
-- "Show me questions related to World War I battles"
-- "Search for questions about carbon tax and pollution"
-- "Find questions discussing marine ecosystems"
+- "geography" - finds questions about countries, capitals, maps, etc.
+- "mathematics" - finds math problems, calculations, equations
+- "science" - finds science questions, experiments, concepts
+- "history" - finds historical questions and events
+- "general knowledge" - finds general knowledge questions
 
 **Request Format**:
 ```json

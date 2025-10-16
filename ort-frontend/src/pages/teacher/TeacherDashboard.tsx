@@ -1,7 +1,6 @@
 import { useEffect, useState, useMemo } from 'react';
 import { useQuestions, useDeleteQuestion } from '../../hooks/useQuestions';
 import { type Question } from '../../types/question';
-import { type QuestionItem } from '../../types/ai';
 import { StatsCard } from '../../components/cards';
 import { QuestionCard } from '../../components/cards';
 import { QuestionForm, SmartSearchBar } from '../../components/forms';
@@ -20,13 +19,27 @@ export default function TeacherDashboard() {
   const [searchResults, setSearchResults] = useState<number[]>([]);
   const [hasSearched, setHasSearched] = useState(false);
 
-  // Convert questions to QuestionItem format for search
+  // Convert questions to QuestionItem format for search with enhanced context
   const searchableQuestions = useMemo(() => {
     if (!questions) return [];
-    return questions.slice(0, 20).map(q => ({
-      id: q.id,
-      text: q.title + ' ' + q.text // Combine title and text for better semantic search
-    }));
+    return questions.slice(0, 20).map(q => {
+      // Create enhanced text that includes multiple aspects for better semantic matching
+      const enhancedText = [
+        q.title,
+        q.text,
+        // Add subject hints based on common patterns
+        ...(q.text.toLowerCase().includes('capital') || q.text.toLowerCase().includes('country') || q.text.toLowerCase().includes('continent') ? ['geography'] : []),
+        ...(q.text.toLowerCase().includes('solve') || q.text.toLowerCase().includes('calculate') || q.text.toLowerCase().includes('equation') ? ['mathematics'] : []),
+        ...(q.text.toLowerCase().includes('explain') || q.text.toLowerCase().includes('what is') || q.text.toLowerCase().includes('describe') ? ['science', 'general knowledge'] : []),
+        ...(q.text.toLowerCase().includes('when') || q.text.toLowerCase().includes('history') || q.text.toLowerCase().includes('war') ? ['history'] : []),
+        ...(q.text.toLowerCase().includes('analyze') || q.text.toLowerCase().includes('compare') || q.text.toLowerCase().includes('evaluate') ? ['literature', 'critical thinking'] : [])
+      ].join(' ');
+      
+      return {
+        id: q.id,
+        text: enhancedText
+      };
+    });
   }, [questions]);
 
   useEffect(() => {
