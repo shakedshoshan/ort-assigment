@@ -1,4 +1,11 @@
-export { default as Layout } from './Layout';
-export { default as TeacherDashboard } from './TeacherDashboard';
-export { default as QuestionView } from './QuestionView';
-export { default as StudentForm } from './StudentForm';
+// Layout components
+export * from './layout';
+
+// UI components
+export * from './ui';
+
+// Card components
+export * from './cards';
+
+// Form components
+export * from './forms';

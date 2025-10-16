@@ -1,11 +1,11 @@
 import { type ReactNode } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 
-interface LayoutProps {
+interface AppLayoutProps {
   children: ReactNode;
 }
 
-export default function Layout({ children }: LayoutProps) {
+export default function AppLayout({ children }: AppLayoutProps) {
   const location = useLocation();
   
   const isActive = (path: string) => location.pathname === path;
@@ -13,7 +13,7 @@ export default function Layout({ children }: LayoutProps) {
   return (
     <div className="min-h-screen bg-neutral-50">
       {/* Header */}
-      <header className="bg-white shadow-soft border-b border-neutral-200">
+      <header className="bg-white shadow-md border-b border-neutral-200">
         <div className="container-custom">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center space-x-4">

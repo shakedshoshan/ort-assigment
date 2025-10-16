@@ -1,12 +1,13 @@
 
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { Layout, TeacherDashboard, QuestionView, StudentForm } from './components';
+import AppLayout from './components/layout/AppLayout';
+import { TeacherDashboard, QuestionView, StudentForm } from './pages';
 import './App.css';
 
 function App() {
   return (
     <Router>
-      <Layout>
+      <AppLayout>
         <Routes>
           {/* Redirect root to teacher dashboard */}
           <Route path="/" element={<Navigate to="/teacher" replace />} />
@@ -21,7 +22,7 @@ function App() {
           {/* Catch all route */}
           <Route path="*" element={<Navigate to="/teacher" replace />} />
         </Routes>
-      </Layout>
+      </AppLayout>
     </Router>
   );
 }
