@@ -1,12 +1,20 @@
 import { useParams, Link } from 'react-router-dom';
 import { useQuestionWithAnswers, useCloseQuestion } from '../../hooks/useQuestions';
+import { useSummarizeAnswers } from '../../hooks/useAI';
+import { useState } from 'react';
 import { type Answer } from '../../types/answer';
+import { type StudentAnswer, type SummarizationRequest } from '../../types/ai';
 import { LoadingSpinner } from '../../components/ui';
 import { ErrorAlert } from '../../components/ui';
 
 export default function QuestionView() {
   const { id } = useParams<{ id: string }>();
   const questionId = parseInt(id || '0');
+  
+  // State for AI summary feature
+  const [showSummaryModal, setShowSummaryModal] = useState(false);
+  const [summaryInstructions, setSummaryInstructions] = useState('');
+  const [summary, setSummary] = useState<string | null>(null);
   
   // Fetch question with answers data using the new hook
   const { 
@@ -20,6 +28,9 @@ export default function QuestionView() {
   
   // Close question functionality
   const { closeQuestion, loading: closeLoading } = useCloseQuestion();
+  
+  // AI summary functionality
+  const { summarizeAnswers, loading: summaryLoading, error: summaryError } = useSummarizeAnswers();
 
   const handleCloseQuestion = async () => {
     if (question && !question.is_closed) {
@@ -33,8 +44,43 @@ export default function QuestionView() {
     }
   };
 
-  const handleAISummary = () => {
-    alert('AI Summary: Based on the student responses, the main themes include data validation, authentication, logging, and database optimization. Students show good understanding of technical challenges in microservices architecture.');
+  const handleOpenSummaryModal = () => {
+    setShowSummaryModal(true);
+  };
+
+  const handleCloseSummaryModal = () => {
+    setShowSummaryModal(false);
+    setSummaryInstructions('');
+  };
+
+  const handleAISummary = async () => {
+    if (!question || !summaryInstructions.trim()) return;
+    
+    // Format student answers for the AI request
+    const formattedAnswers: StudentAnswer[] = answers.map(answer => ({
+      student_id: answer.student_id,
+      student_name: answer.student_id, // Using student_id as name since we don't have names
+      answer_text: answer.text,
+      submitted_at: answer.timestamp
+    }));
+    
+    // Create the summarization request
+    const request: SummarizationRequest = {
+      context: {
+        question_id: question.id,
+        question_text: question.text,
+        summary_instructions: summaryInstructions
+      },
+      student_answers: formattedAnswers
+    };
+    
+    // Send request to AI service
+    const result = await summarizeAnswers(request);
+    
+    if (result) {
+      setSummary(result.summary);
+      handleCloseSummaryModal();
+    }
   };
 
   // Convert Question to QuestionDetails format for display
@@ -125,14 +171,13 @@ export default function QuestionView() {
                 {closeLoading ? 'Closing...' : 'Close Question'}
               </button>
             )}
-            {questionDetails.status === 'Closed' && (
-              <button
-                onClick={handleAISummary}
-                className="btn btn-primary"
-              >
-                AI Summary
-              </button>
-            )}
+            <button
+              onClick={handleOpenSummaryModal}
+              disabled={summaryLoading || answers.length === 0}
+              className="btn btn-primary"
+            >
+              {summaryLoading ? 'Generating...' : 'Summary with AI'}
+            </button>
           </div>
         </div>
       </div>
@@ -183,6 +228,73 @@ export default function QuestionView() {
           </div>
         )}
       </div>
+
+      {/* AI Summary Section - Show when summary is available */}
+      {summary && (
+        <div className="card">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-xl font-semibold text-neutral-900">AI Summary</h2>
+            <button 
+              onClick={() => setSummary(null)} 
+              className="btn btn-sm btn-neutral"
+            >
+              Clear Summary
+            </button>
+          </div>
+          <div className="bg-primary-50 rounded-lg p-6 border border-primary-100">
+            <p className="text-neutral-800 leading-relaxed whitespace-pre-line">{summary}</p>
+          </div>
+        </div>
+      )}
+
+      {/* AI Summary Modal */}
+      {showSummaryModal && (
+        <div className="fixed inset-0 bg-neutral-900 bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl shadow-xl max-w-lg w-full p-6 mx-4">
+            <h3 className="text-xl font-bold text-neutral-900 mb-4">Generate AI Summary</h3>
+            
+            <div className="mb-6">
+              <label htmlFor="summary-instructions" className="form-label block mb-2 text-neutral-700">
+                Instructions for Summary
+              </label>
+              <textarea
+                id="summary-instructions"
+                className="form-textarea w-full rounded-lg border-neutral-300 focus:border-primary-500 focus:ring focus:ring-primary-200 transition"
+                rows={4}
+                placeholder="E.g., Summarize the main themes from student answers, identify common misconceptions, or suggest topics for further discussion"
+                value={summaryInstructions}
+                onChange={(e) => setSummaryInstructions(e.target.value)}
+              />
+              {summaryError && (
+                <p className="text-error-600 text-sm mt-2">{summaryError}</p>
+              )}
+            </div>
+            
+            <div className="flex justify-end space-x-3">
+              <button 
+                onClick={handleCloseSummaryModal}
+                className="btn btn-neutral"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleAISummary}
+                disabled={summaryLoading || !summaryInstructions.trim()}
+                className="btn btn-primary"
+              >
+                {summaryLoading ? (
+                  <>
+                    <span className="loading-spinner loading-spinner-sm mr-2"></span>
+                    Generating...
+                  </>
+                ) : (
+                  'Generate Summary'
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

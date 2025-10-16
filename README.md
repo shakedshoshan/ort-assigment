@@ -104,6 +104,8 @@ ort-frontend/src/
 4. Click "View Details" on any question
 5. Navigate to Question View (`/teacher/questions/:id`)
 6. Review student answers and question details
+7. Generate AI summaries with custom instructions
+8. View AI-generated analysis of student responses
 
 **Student Flow**:
 1. Access Student Form (`/student`)
@@ -198,6 +200,40 @@ interface QuestionFormProps {
 
 **Integration**: The component uses the `useCreateQuestion` hook internally for API communication and state management, ensuring consistent error handling and loading states across the application.
 
+#### AI Summary Feature
+
+The AI Summary feature allows teachers to generate intelligent analysis of student responses using OpenAI's language models. This feature is integrated into the Question View page and provides powerful insights into student understanding.
+
+**Key Features**:
+- **Custom Instructions**: Teachers can provide specific instructions for how to analyze the responses
+- **Real-time Generation**: AI summary is generated on-demand with loading indicators
+- **Persistent Display**: Summary remains visible until manually cleared
+- **Responsive Design**: Works seamlessly on all device sizes
+- **Accessibility**: Full keyboard navigation and screen reader support
+
+**Usage Flow**:
+1. Teacher navigates to Question View (`/teacher/questions/:id`)
+2. Clicks "Summary with AI" button (available for questions with answers)
+3. Enters custom instructions in the modal dialog
+4. Clicks "Generate Summary" to send request to AI service
+5. Views the generated summary in a dedicated section
+6. Can clear the summary to generate a new one
+
+**Frontend Implementation**:
+- **Summary Button**: Available for both open and closed questions
+- **Instructions Modal**: Modal dialog for entering custom summary instructions
+- **Summary Display**: Dedicated section showing the AI-generated summary
+- **Error Handling**: Comprehensive error handling with user-friendly messages
+- **Custom Hook**: `useSummarizeAnswers` hook for API communication
+- **State Management**: Modal visibility, instructions, summary, loading, and error states
+
+**API Integration**:
+- **Endpoint**: `POST /api/v1/ai/summarize`
+- **Request Format**: JSON with context and student answers
+- **Response Format**: JSON with generated summary
+- **Error Handling**: Comprehensive error states and user feedback
+- **Loading States**: Visual indicators during API calls
+
 ## Backend API
 
 The backend is a FastAPI server that provides a REST API for managing classroom questions and student answers.
@@ -276,13 +312,24 @@ uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
 
 The system includes an AI-powered summarization service that helps teachers analyze student responses to classroom questions. This feature uses OpenAI's language models to generate comprehensive summaries based on custom instructions.
 
-### Features
+### Backend Implementation
 
+The AI summarization service uses a robust HTTP-based approach that directly communicates with OpenAI's API, avoiding common client library issues.
+
+**Architecture**:
+- **Service Layer**: `AISummarizationService` handles all AI-related operations
+- **HTTP Client**: Direct HTTP requests using the `requests` library
+- **Error Handling**: Comprehensive error handling with specific error messages
+- **Configuration**: Environment-based configuration for API keys and model settings
+
+**Key Features**:
 - **Dynamic Instructions**: Teachers can provide specific summarization instructions for each question
 - **Student Analysis**: Identifies students with the deepest understanding
 - **Confusion Detection**: Highlights common areas of confusion across the class
 - **Flexible Formatting**: Supports various output formats and structures
 - **Error Handling**: Robust error handling with meaningful error messages
+- **HTTP-Based**: Direct API communication for reliability
+- **Configurable**: Environment-based configuration for different models and settings
 
 ### Usage
 
@@ -314,6 +361,29 @@ The system includes an AI-powered summarization service that helps teachers anal
 }
 ```
 
+### Backend Technical Details
+
+**Service Implementation**:
+The AI service uses a direct HTTP approach to communicate with OpenAI's API, avoiding client library issues.
+
+**Key Methods**:
+- `generate_summary()`: Main method for generating AI summaries
+- `_make_openai_request()`: HTTP request handler for OpenAI API
+- `_format_system_prompt()`: Creates structured system prompts
+- `_format_user_prompt()`: Formats user data for AI processing
+
+**Error Handling**:
+- Input validation for empty instructions and missing answers
+- HTTP request error handling with specific error messages
+- API response validation and error recovery
+- Graceful degradation when AI service is unavailable
+
+**Data Models**:
+- `SummarizationRequest`: Contains context and student answers
+- `SummarizationResponse`: Contains generated summary and optional error
+- `SummarizationContext`: Question details and instructions
+- `StudentAnswer`: Individual student response data
+
 ### Configuration
 
 Set the following environment variables to configure the AI service:
@@ -324,7 +394,32 @@ OPENAI_API_KEY="your-openai-api-key"
 
 # Optional (with defaults)
 OPENAI_MODEL="gpt-3.5-turbo"  # Model to use
+OPENAI_TEMPERATURE="0.7"      # Response creativity (0.0-1.0)
+OPENAI_MAX_TOKENS="2000"      # Maximum response length
 ```
+
+### Complete Workflow
+
+The AI summarization feature provides a complete end-to-end workflow for analyzing student responses:
+
+#### Teacher Experience
+
+1. **Access Question**: Teacher navigates to any question with student answers
+2. **Initiate Summary**: Clicks "Summary with AI" button
+3. **Provide Instructions**: Enters custom analysis instructions in modal dialog
+4. **Generate Analysis**: AI processes student responses according to instructions
+5. **Review Results**: Views generated summary with insights and recommendations
+6. **Take Action**: Uses insights to adjust teaching or provide feedback
+
+#### Example Instructions
+
+Teachers can provide various types of instructions:
+
+- **Theme Analysis**: "Summarize the main themes from student answers"
+- **Understanding Assessment**: "Identify students who demonstrated deep understanding"
+- **Confusion Detection**: "Highlight common areas of confusion"
+- **Learning Points**: "Extract 3 key learning points from the responses"
+- **Gap Analysis**: "Identify knowledge gaps that need addressing"
 
 ### Integration
 
@@ -334,6 +429,26 @@ The AI summarization service integrates seamlessly with the existing classroom Q
 2. **Custom Instructions**: Each summary can be tailored with specific analysis requirements
 3. **Student Insights**: AI identifies patterns and highlights exceptional responses
 4. **Educational Value**: Helps teachers understand class comprehension and adjust teaching
+5. **Real-time Analysis**: Immediate insights without manual analysis
+6. **Scalable Solution**: Works with any number of student responses
+
+### Troubleshooting
+
+**Common Issues**:
+- **Button Not Working**: Ensure question has student answers and API key is configured
+- **Generation Fails**: Check API key validity, internet connectivity, and instructions
+- **Poor Quality Summaries**: Provide more specific instructions and ensure meaningful content
+
+**Error Messages**:
+- "No student answers provided": Question has no submitted answers
+- "Summary instructions cannot be empty": Instructions field is required
+- "OpenAI API request failed": Network or API configuration issue
+- "Empty response from OpenAI API": API returned no content
+
+**Performance**:
+- Response time: 2-5 seconds typically
+- Token limits may affect large numbers of answers
+- Rate limiting applies to frequent usage
 
 ## Development Principles
 
