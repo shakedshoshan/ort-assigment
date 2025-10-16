@@ -255,4 +255,5 @@ def get_answer_service():
     """Get answer service instance."""
     from app.services.answer_service import AnswerService
     from app.database.repositories.answer_repository import AnswerRepository
-    return AnswerService(AnswerRepository(), get_question_service())
+    from app.services.student_service import StudentService
+    return AnswerService(AnswerRepository(), get_question_service(), StudentService())

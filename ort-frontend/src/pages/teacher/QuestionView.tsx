@@ -59,7 +59,7 @@ export default function QuestionView() {
     // Format student answers for the AI request
     const formattedAnswers: StudentAnswer[] = answers.map(answer => ({
       student_id: answer.student_id,
-      student_name: answer.student_id, // Using student_id as name since we don't have names
+      student_name: answer.student_name || answer.student_id, // Use actual student name if available
       answer_text: answer.text,
       submitted_at: answer.timestamp
     }));
@@ -196,7 +196,7 @@ export default function QuestionView() {
             <table className="table table-auto w-full">
               <thead>
                 <tr className="border-b border-neutral-200">
-                  <th className="text-left py-3 px-4 font-semibold text-neutral-700">Student ID</th>
+                  <th className="text-left py-3 px-4 font-semibold text-neutral-700">Student</th>
                   <th className="text-left py-3 px-4 font-semibold text-neutral-700">Answer Text</th>
                   <th className="text-left py-3 px-4 font-semibold text-neutral-700">Submission Time</th>
                 </tr>
@@ -204,7 +204,14 @@ export default function QuestionView() {
               <tbody>
                 {answers.map((answer: Answer) => (
                   <tr key={answer.id} className="border-b border-neutral-100 hover:bg-neutral-50">
-                    <td className="py-4 px-4 font-medium text-neutral-900">{answer.student_id}</td>
+                    <td className="py-4 px-4 font-medium text-neutral-900">
+                      <div>
+                        <div className="font-semibold">{answer.student_name || `Student ${answer.student_id}`}</div>
+                        {answer.student_name && (
+                          <div className="text-sm text-neutral-500">ID: {answer.student_id}</div>
+                        )}
+                      </div>
+                    </td>
                     <td className="py-4 px-4 text-neutral-700 max-w-md">
                       <div className="line-clamp-3">{answer.text}</div>
                     </td>

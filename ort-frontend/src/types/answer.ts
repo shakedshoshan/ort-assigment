@@ -2,6 +2,7 @@ export interface Answer {
   id: number;
   question_id: number;
   student_id: string;
+  student_name: string | null;
   text: string;
   timestamp: string;
 }

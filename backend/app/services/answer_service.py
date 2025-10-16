@@ -9,6 +9,7 @@ from fastapi import HTTPException
 try:
     from app.database.repositories.answer_repository import AnswerRepository
     from .question_service import QuestionService
+    from .student_service import StudentService
 except ImportError:
     # Fallback for direct execution
     import sys
@@ -16,21 +17,24 @@ except ImportError:
     sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
     from app.database.repositories.answer_repository import AnswerRepository
     from .question_service import QuestionService
+    from .student_service import StudentService
 
 
 class AnswerService:
     """Service class for answer operations."""
     
-    def __init__(self, answer_repo: AnswerRepository, question_service: QuestionService):
+    def __init__(self, answer_repo: AnswerRepository, question_service: QuestionService, student_service: StudentService = None):
         """
         Initializes dependencies on the Answer Repository and Question Service.
         
         Args:
             answer_repo: Answer repository instance
             question_service: Question service instance
+            student_service: Student service instance (optional, will create default if None)
         """
         self.answer_repo = answer_repo
         self.question_service = question_service
+        self.student_service = student_service or StudentService()
     
     def submit_or_update_answer(self, db, access_code: str, student_id: str, answer_text: str) -> Dict[str, Any]:
         """
@@ -112,15 +116,25 @@ class AnswerService:
             answer: SQLAlchemy answer object
             
         Returns:
-            Answer dictionary
+            Answer dictionary with student name included
         """
         if not answer:
             return None
+        
+        # Get student name
+        student_name = None
+        try:
+            student = self.student_service.get_student_by_id(answer.student_id)
+            student_name = student.get("name") if student else None
+        except HTTPException:
+            # If student not found, keep name as None
+            student_name = None
         
         return {
             "id": answer.id,
             "question_id": answer.question_id,
             "student_id": answer.student_id,
+            "student_name": student_name,
             "text": answer.text,
             "timestamp": answer.timestamp.isoformat() if answer.timestamp else None
         }

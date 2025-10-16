@@ -17,9 +17,11 @@ export function AnswerCard({ answer, index }: AnswerCardProps) {
               </span>
             </div>
             <div>
-              <h4 className="font-medium text-neutral-900">Student Answer</h4>
+              <h4 className="font-medium text-neutral-900">
+                {answer.student_name || `Student ${answer.student_id}`}
+              </h4>
               <p className="text-sm text-neutral-600">
-                Student ID: {answer.student_id} • Submitted {new Date(answer.timestamp).toLocaleDateString()}
+                {answer.student_name && `ID: ${answer.student_id} • `}Submitted {new Date(answer.timestamp).toLocaleDateString()}
               </p>
             </div>
           </div>
