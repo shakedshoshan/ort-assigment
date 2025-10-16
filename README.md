@@ -396,7 +396,6 @@ uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
 - **AI Features**: OpenAI-powered summarization and smart search capabilities
 - **SQLite Database**: Persistent storage with SQLAlchemy ORM
 - **Role-Based API**: Separate endpoints for teachers and students
-- **Auto Documentation**: Interactive Swagger UI and ReDoc documentation
 - **CORS Support**: Cross-origin requests enabled
 - **Data Validation**: Pydantic models for request/response validation
 - **Business Logic**: Comprehensive validation and error handling
