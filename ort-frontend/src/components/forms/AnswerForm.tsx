@@ -57,10 +57,15 @@ export function AnswerForm({ question, onSubmit, loading = false, onBack }: Answ
             required
           />
           <div className="flex justify-between items-center mt-2">
-            <div className="text-sm text-neutral-500">
+            <div className={`text-sm ${answerText.length > 200 ? 'text-error-600' : answerText.length >= 180 ? 'text-warning-600' : 'text-neutral-500'}`}>
               {answerText.length}/200 characters
             </div>
-            {answerText.length >= 200 && (
+            {answerText.length > 200 && (
+              <div className="text-sm text-error-600 font-medium">
+                Text too long! Please shorten your answer.
+              </div>
+            )}
+            {answerText.length === 200 && (
               <div className="text-sm text-error-600">
                 Character limit reached
               </div>
@@ -83,7 +88,7 @@ export function AnswerForm({ question, onSubmit, loading = false, onBack }: Answ
           </button>
           <button
             type="submit"
-            disabled={loading || question.is_closed || !answerText.trim()}
+            disabled={loading || question.is_closed || !answerText.trim() || answerText.length > 200}
             className="btn btn-primary btn-lg"
           >
             {loading ? (

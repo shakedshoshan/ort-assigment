@@ -58,6 +58,14 @@ export const useSubmitAnswer = () => {
   const submitAnswer = async (submission: AnswerSubmission): Promise<AnswerResponse | null> => {
     setLoading(true);
     setError(null);
+    
+    // Frontend validation for character limit
+    if (submission.answer_text.length > 200) {
+      setError('Answer text cannot exceed 200 characters');
+      setLoading(false);
+      return null;
+    }
+    
     try {
       const response = await fetch(`${API_BASE_URL}/submit`, {
         method: 'POST',
