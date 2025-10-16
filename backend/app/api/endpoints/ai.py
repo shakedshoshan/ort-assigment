@@ -1,9 +1,10 @@
 from fastapi import APIRouter, HTTPException
-from ...models.ai_models import SummarizationRequest, SummarizationResponse
-from ...services.ai_service import AISummarizationService
+from ...models.ai_models import SummarizationRequest, SummarizationResponse, SmartSearchRequest, SmartSearchResponse
+from ...services.ai_service import AISummarizationService, AISmartSearchService
 
 router = APIRouter()
-ai_service = AISummarizationService()
+summarization_service = AISummarizationService()
+smart_search_service = AISmartSearchService()
 
 @router.post("/summarize", response_model=SummarizationResponse)
 def summarize_answers(request: SummarizationRequest) -> SummarizationResponse:
@@ -20,10 +21,33 @@ def summarize_answers(request: SummarizationRequest) -> SummarizationResponse:
         HTTPException: If summarization fails
     """
     try:
-        summary = ai_service.generate_summary(request)
+        summary = summarization_service.generate_summary(request)
         return SummarizationResponse(summary=summary)
     except Exception as e:
         raise HTTPException(
             status_code=500,
             detail=f"Failed to generate summary: {str(e)}"
+        )
+        
+@router.post("/smart-search", response_model=SmartSearchResponse)
+def smart_search(request: SmartSearchRequest) -> SmartSearchResponse:
+    """
+    Perform a semantic search to find questions matching a natural language query.
+    
+    Args:
+        request (SmartSearchRequest): The request containing the search query and available questions
+        
+    Returns:
+        SmartSearchResponse: The IDs of questions matching the search query
+        
+    Raises:
+        HTTPException: If the search fails
+    """
+    try:
+        matching_ids = smart_search_service.find_relevant_questions(request)
+        return SmartSearchResponse(matching_question_ids=matching_ids)
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to perform smart search: {str(e)}"
         )

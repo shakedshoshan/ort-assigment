@@ -1,13 +1,15 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { useQuestions, useDeleteQuestion } from '../../hooks/useQuestions';
 import { type Question } from '../../types/question';
+import { type QuestionItem } from '../../types/ai';
 import { StatsCard } from '../../components/cards';
 import { QuestionCard } from '../../components/cards';
-import { QuestionForm } from '../../components/forms';
+import { QuestionForm, SmartSearchBar } from '../../components/forms';
 
 export default function TeacherDashboard() {
   const { questions, loading, error, refetch } = useQuestions();
   const { deleteQuestion, error: deleteError } = useDeleteQuestion();
+  
   const [stats, setStats] = useState({
     totalQuestions: 0,
     totalOpenQuestions: 0,
@@ -15,6 +17,17 @@ export default function TeacherDashboard() {
   });
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [deletingQuestionId, setDeletingQuestionId] = useState<number | null>(null);
+  const [searchResults, setSearchResults] = useState<number[]>([]);
+  const [hasSearched, setHasSearched] = useState(false);
+
+  // Convert questions to QuestionItem format for search
+  const searchableQuestions = useMemo(() => {
+    if (!questions) return [];
+    return questions.slice(0, 20).map(q => ({
+      id: q.id,
+      text: q.title + ' ' + q.text // Combine title and text for better semantic search
+    }));
+  }, [questions]);
 
   useEffect(() => {
     if (questions) {
@@ -37,6 +50,24 @@ export default function TeacherDashboard() {
   const handleCancelCreate = () => {
     setShowCreateForm(false);
   };
+
+  const handleSearchResults = (results: number[]) => {
+    setSearchResults(results);
+    setHasSearched(true);
+  };
+
+  const handleClearSearch = () => {
+    setSearchResults([]);
+    setHasSearched(false);
+  };
+
+  // Filter questions based on search results
+  const displayedQuestions = useMemo(() => {
+    if (!questions) return [];
+    if (!hasSearched) return questions;
+    if (searchResults.length === 0) return []; // Return empty array when search has no results
+    return questions.filter(q => searchResults.includes(q.id));
+  }, [questions, searchResults, hasSearched]);
 
   const handleDeleteQuestion = async (questionId: number) => {
     setDeletingQuestionId(questionId);
@@ -136,13 +167,47 @@ export default function TeacherDashboard() {
 
       {/* Questions List */}
       <div className="card">
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-semibold text-neutral-900">Questions</h2>
+        <div className="flex flex-col space-y-4 mb-6">
+          <div className="flex items-center justify-between">
+            <h2 className="text-xl font-semibold text-neutral-900">Questions</h2>
+          </div>
+
+          {/* Smart Search */}
+          <SmartSearchBar
+            searchableQuestions={searchableQuestions}
+            onSearchResults={handleSearchResults}
+            onClearSearch={handleClearSearch}
+            disabled={loading}
+          />
+          
+          {hasSearched && searchResults.length > 0 && (
+            <p className="text-sm text-success-600" role="status">
+              Found {searchResults.length} matching question{searchResults.length !== 1 ? 's' : ''}
+            </p>
+          )}
         </div>
 
-        {questions && questions.length > 0 ? (
+        {hasSearched && searchResults.length === 0 ? (
+          <div className="text-center py-12">
+            <div className="w-16 h-16 bg-neutral-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <svg className="w-8 h-8 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+            </div>
+            <h3 className="text-lg font-medium text-neutral-900 mb-2">No results found</h3>
+            <p className="text-neutral-600 mb-4">
+              No questions match your search criteria. Try different keywords or phrases.
+            </p>
+            <button
+              onClick={handleClearSearch}
+              className="btn btn-outline btn-sm"
+            >
+              Clear Search
+            </button>
+          </div>
+        ) : displayedQuestions && displayedQuestions.length > 0 ? (
           <div className="space-y-4">
-            {questions.map((question: Question) => (
+            {displayedQuestions.map((question: Question) => (
               <QuestionCard
                 key={question.id}
                 question={question}

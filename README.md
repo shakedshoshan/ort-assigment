@@ -2,6 +2,17 @@
 
 This project contains a FastAPI backend server and a React TypeScript frontend for managing classroom questions and student answers.
 
+## Recent Updates
+
+**AI Smart Search Feature** (Latest): Added semantic search capability that allows teachers to find relevant questions using natural language queries. The feature uses OpenAI's language models to understand the meaning behind search queries and return the most relevant question IDs.
+
+**Key Improvements**:
+- New `/api/v1/ai/smart-search` endpoint for semantic question search
+- Enhanced AI service architecture with base class for common functionality
+- Optimized OpenAI API integration with JSON response format
+- Frontend SmartSearchBar component with intuitive UI
+- Comprehensive documentation and error handling
+
 ## Project Structure
 
 ```
@@ -94,18 +105,20 @@ ort-frontend/src/
 - **useQuestions**: Manages question data fetching and state
 - **useAnswers**: Handles answer submission and retrieval
 - **useStudents**: Student data management
+- **useAI**: Provides AI-powered features (summarization and smart search)
 
 #### 3. **Application Flow**
 
 **Teacher Flow**:
 1. Access Teacher Dashboard (`/teacher`)
 2. View question statistics and list
-3. Create new questions using the QuestionForm component
-4. Click "View Details" on any question
-5. Navigate to Question View (`/teacher/questions/:id`)
-6. Review student answers and question details
-7. Generate AI summaries with custom instructions
-8. View AI-generated analysis of student responses
+3. Use Smart Search to find specific questions with natural language queries
+4. Create new questions using the QuestionForm component
+5. Click "View Details" on any question
+6. Navigate to Question View (`/teacher/questions/:id`)
+7. Review student answers and question details
+8. Generate AI summaries with custom instructions
+9. View AI-generated analysis of student responses
 
 **Student Flow**:
 1. Access Student Form (`/student`)
@@ -200,6 +213,98 @@ interface QuestionFormProps {
 
 **Integration**: The component uses the `useCreateQuestion` hook internally for API communication and state management, ensuring consistent error handling and loading states across the application.
 
+#### useAI Hook
+
+The `useAI` hook provides a clean interface for AI-powered features, including both summarization and smart search functionality.
+
+**Available Hooks**:
+- **`useSummarizeAnswers`**: Generates AI-powered summaries of student responses
+- **`useSmartSearch`**: Performs semantic search to find relevant questions
+
+**Smart Search Hook**:
+```typescript
+const { smartSearch, loading, error } = useSmartSearch();
+
+// Usage
+const result = await smartSearch({
+  query: "Find questions about environmental impact",
+  available_questions: searchableQuestions
+});
+```
+
+**Features**:
+- **Type Safety**: Full TypeScript support with proper interfaces
+- **Error Handling**: Comprehensive error management with user-friendly messages
+- **Loading States**: Built-in loading indicators for async operations
+- **API Integration**: Direct communication with AI endpoints
+- **Consistent Interface**: Same pattern as other custom hooks
+
+**Integration**: Used by the SmartSearchBar component and Question View page for AI-powered functionality.
+
+#### SmartSearchBar Component
+
+The `SmartSearchBar` component provides an intuitive interface for teachers to perform semantic searches across their questions using natural language queries. This component integrates with the AI smart search API to deliver intelligent question discovery.
+
+**Features**:
+- **Natural Language Input**: Teachers can type conversational search queries
+- **Real-time Search**: Instant search execution with loading indicators
+- **Error Handling**: Comprehensive error display with user-friendly messages
+- **Clear Functionality**: Easy way to reset search and return to all questions
+- **Accessibility**: Full keyboard navigation and screen reader support
+- **Responsive Design**: Works seamlessly on all device sizes
+
+**Props**:
+```typescript
+interface SmartSearchBarProps {
+  searchableQuestions: QuestionItem[];  // Questions to search through (max 20)
+  onSearchResults: (results: number[]) => void;  // Callback for search results
+  onClearSearch: () => void;  // Callback for clearing search
+  disabled?: boolean;  // Optional disabled state
+}
+```
+
+**Usage Example**:
+```tsx
+<SmartSearchBar
+  searchableQuestions={searchableQuestions}
+  onSearchResults={handleSearchResults}
+  onClearSearch={handleClearSearch}
+  disabled={loading}
+/>
+```
+
+**Integration**: The component uses the `useSmartSearch` hook internally for API communication, providing consistent error handling and loading states. It automatically limits searches to the first 20 questions for optimal performance.
+
+#### Teacher Dashboard Integration
+
+The Smart Search feature is seamlessly integrated into the Teacher Dashboard, providing an enhanced question management experience.
+
+**User Experience Flow**:
+1. **Access Dashboard**: Teacher opens the Teacher Dashboard (`/teacher`)
+2. **View Questions**: See all questions with statistics and status
+3. **Perform Search**: Use the Smart Search bar to find specific questions
+4. **View Results**: See filtered results or "No results found" message
+5. **Clear Search**: Easily return to viewing all questions
+
+**Search States**:
+- **No Search**: Shows all questions with statistics
+- **Search with Results**: Displays only matching questions with result count
+- **Search with No Results**: Shows "No results found" message with clear search option
+- **Loading State**: Displays loading spinner during search execution
+
+**Key Features**:
+- **Intuitive Interface**: Search bar with helpful placeholder text and examples
+- **Real-time Feedback**: Loading indicators and success/error messages
+- **Smart Filtering**: Only shows relevant questions based on semantic matching
+- **Easy Reset**: One-click clear search to return to all questions
+- **Accessibility**: Full keyboard support and screen reader compatibility
+
+**Technical Implementation**:
+- **Component Architecture**: Modular SmartSearchBar component for reusability
+- **State Management**: Clean separation between search state and question display
+- **Performance**: Optimized to search only the first 20 questions
+- **Error Handling**: Comprehensive error states with user-friendly messages
+
 #### AI Summary Feature
 
 The AI Summary feature allows teachers to generate intelligent analysis of student responses using OpenAI's language models. This feature is integrated into the Question View page and provides powerful insights into student understanding.
@@ -276,7 +381,7 @@ uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
 
 - **Student Management**: Full CRUD operations for student data
 - **Classroom Q&A System**: Complete question and answer functionality
-- **AI Summarization**: OpenAI-powered analysis of student responses
+- **AI Features**: OpenAI-powered summarization and smart search capabilities
 - **SQLite Database**: Persistent storage with SQLAlchemy ORM
 - **Role-Based API**: Separate endpoints for teachers and students
 - **Auto Documentation**: Interactive Swagger UI and ReDoc documentation
@@ -307,10 +412,53 @@ uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
 
 #### AI Endpoints (Teacher)
 - `POST /api/v1/ai/summarize` - Generate an AI-powered summary of student answers
+- `POST /api/v1/ai/smart-search` - Perform semantic search to find relevant questions
 
-## AI Summarization Feature
+## AI Features
 
-The system includes an AI-powered summarization service that helps teachers analyze student responses to classroom questions. This feature uses OpenAI's language models to generate comprehensive summaries based on custom instructions.
+The system includes two AI-powered features that help teachers manage and analyze classroom questions and student responses using OpenAI's language models.
+
+### AI Summarization Feature
+
+The AI summarization service helps teachers analyze student responses to classroom questions by generating comprehensive summaries based on custom instructions.
+
+### AI Smart Search Feature
+
+The AI smart search service enables teachers to perform semantic searches across their questions using natural language queries. This feature helps teachers quickly find relevant questions even when they don't remember exact keywords or phrases.
+
+**Key Features**:
+- **Semantic Matching**: Finds questions based on meaning, not just keywords
+- **Natural Language Queries**: Use conversational language to search
+- **Intelligent Ranking**: Returns the most relevant questions (1-3 matches)
+- **Flexible Search**: Works with partial information or related concepts
+- **Fast Results**: Quick response times for efficient question discovery
+
+**Usage Examples**:
+- "Find questions about environmental impact and sustainability"
+- "Show me questions related to World War I battles"
+- "Search for questions about carbon tax and pollution"
+- "Find questions discussing marine ecosystems"
+
+**Request Format**:
+```json
+{
+  "query": "Find questions about human impact on the environment and sustainability policies.",
+  "available_questions": [
+    {"id": 101, "text": "What are the three forms of matter?"},
+    {"id": 102, "text": "Discuss the pros and cons of implementing a carbon tax to reduce pollution."},
+    {"id": 103, "text": "Analyze the role of NGOs in promoting sustainable development goals."},
+    {"id": 104, "text": "Describe the main battles of World War I."},
+    {"id": 105, "text": "How does plastic consumption directly affect marine ecosystems?"}
+  ]
+}
+```
+
+**Response Format**:
+```json
+{
+  "matching_question_ids": [102, 103, 105]
+}
+```
 
 ### Backend Implementation
 

@@ -20,3 +20,18 @@ export interface SummarizationResponse {
   summary: string;
   error?: string;
 }
+
+export interface QuestionItem {
+  id: number;
+  text: string;
+}
+
+export interface SmartSearchRequest {
+  query: string;
+  available_questions: QuestionItem[];
+}
+
+export interface SmartSearchResponse {
+  matching_question_ids: number[];
+  error?: string;
+}
