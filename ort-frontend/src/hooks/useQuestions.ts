@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { type Question, type QuestionCreate, type QuestionResponse, type Answer } from '../types/index';
+import { type Question, type QuestionCreate, type QuestionResponse, type Answer, type QuestionWithAnswers } from '../types/index';
 
 const API_BASE_URL = 'http://localhost:8000/api/v1/questions';
 
@@ -124,16 +124,16 @@ export const useCloseQuestion = () => {
 };
 
 /**
- * Hook to fetch answers for a specific question
- * @param {number} questionId - The ID of the question to get answers for
- * @returns {Object} answers data, loading state, error state, and refetch function
+ * Hook to fetch question with answers for a specific question
+ * @param {number} questionId - The ID of the question to get complete info for
+ * @returns {Object} question with answers data, loading state, error state, and refetch function
  */
-export const useQuestionAnswers = (questionId: number) => {
-  const [answers, setAnswers] = useState<Answer[]>([]);
+export const useQuestionWithAnswers = (questionId: number) => {
+  const [questionWithAnswers, setQuestionWithAnswers] = useState<QuestionWithAnswers | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchAnswers = async () => {
+  const fetchQuestionWithAnswers = async () => {
     if (!questionId) return;
     
     setLoading(true);
@@ -143,8 +143,8 @@ export const useQuestionAnswers = (questionId: number) => {
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-      const data: Answer[] = await response.json();
-      setAnswers(data);
+      const data: QuestionWithAnswers = await response.json();
+      setQuestionWithAnswers(data);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');
     } finally {
@@ -153,13 +153,33 @@ export const useQuestionAnswers = (questionId: number) => {
   };
 
   useEffect(() => {
-    fetchAnswers();
+    fetchQuestionWithAnswers();
   }, [questionId]);
 
+  return {
+    questionWithAnswers,
+    question: questionWithAnswers?.question || null,
+    answers: questionWithAnswers?.answers || [],
+    answerCount: questionWithAnswers?.answer_count || 0,
+    loading,
+    error,
+    refetch: fetchQuestionWithAnswers
+  };
+};
+
+/**
+ * @deprecated Use useQuestionWithAnswers instead
+ * Hook to fetch answers for a specific question
+ * @param {number} questionId - The ID of the question to get answers for
+ * @returns {Object} answers data, loading state, error state, and refetch function
+ */
+export const useQuestionAnswers = (questionId: number) => {
+  const { answers, loading, error, refetch } = useQuestionWithAnswers(questionId);
+  
   return {
     answers,
     loading,
     error,
-    refetch: fetchAnswers
+    refetch
   };
 };

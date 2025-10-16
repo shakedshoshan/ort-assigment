@@ -24,3 +24,17 @@ export interface QuestionResponse {
 export interface QuestionAccess {
   student_id: string;
 }
+
+export interface QuestionDetails {
+  id: number;
+  title: string;
+  text: string;
+  access_code: string;
+  status: 'Open' | 'Closed';
+}
+
+export interface QuestionWithAnswers {
+  question: Question;
+  answers: import('./answer').Answer[];
+  answer_count: number;
+}

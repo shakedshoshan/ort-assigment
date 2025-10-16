@@ -168,30 +168,37 @@ async def get_questions(
         )
 
 @router.get("/{question_id}/answers", status_code=status.HTTP_200_OK)
-async def get_question_answers(
-    question_id: int = Path(..., title="Question ID", description="ID of the question to get answers for"),
+async def get_question_with_answers(
+    question_id: int = Path(..., title="Question ID", description="ID of the question to get complete info for"),
     db: Session = Depends(get_db),
     question_service: QuestionService = Depends(get_question_service),
     answer_service=Depends(lambda: get_answer_service())
-) -> List[Dict[str, Any]]:
+) -> Dict[str, Any]:
     """
-    View all submitted answers for a specific question.
+    Get complete question information including all submitted answers.
     
     Args:
-        question_id: ID of the question to get answers for
+        question_id: ID of the question to get complete info for
         
     Returns:
-        List of answers for the question
+        Dictionary containing question details and all answers
         
     Raises:
         HTTPException: If question not found
     """
     try:
-        # Check if question exists
-        question_service.get_question_by_id(db, question_id)
+        # Get question details
+        question = question_service.get_question_by_id(db, question_id)
         
-        # Get answers
-        return answer_service.get_answers_for_question(db, question_id)
+        # Get answers for the question
+        answers = answer_service.get_answers_for_question(db, question_id)
+        
+        # Return complete question info with answers
+        return {
+            "question": question,
+            "answers": answers,
+            "answer_count": len(answers)
+        }
     except HTTPException as e:
         # Re-raise the exception
         raise e
@@ -199,7 +206,7 @@ async def get_question_answers(
         # Handle unexpected errors
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to retrieve answers: {str(e)}"
+            detail=f"Failed to retrieve question with answers: {str(e)}"
         )
 
 # Import here to avoid circular imports
