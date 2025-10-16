@@ -8,7 +8,7 @@
  * Available hooks:
  * - useStudents: Manage student data (get all students, get student by ID)
  * - useQuestions: Manage question data (get, create, close questions, get answers)
- * - useAnswers: Handle answer operations (get question by code, submit answers)
+ * - useAnswers: Handle answer operations (get question by code, submit answers, get existing answers)
  */
 
 export * from './useStudents';

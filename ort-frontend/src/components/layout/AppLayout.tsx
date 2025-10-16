@@ -17,6 +17,11 @@ export default function AppLayout({ children }: AppLayoutProps) {
         <div className="container-custom">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center space-x-4">
+              <img 
+                src="https://blinker.co.il/wp-content/uploads/2022/01/WhatsApp-Image-2022-01-17-at-20.12.20.jpg" 
+                alt="ORT Logo" 
+                className="h-10 w-auto"
+              />
               <h1 className="text-xl font-bold text-neutral-900">
                 ORT Assignment System
               </h1>
