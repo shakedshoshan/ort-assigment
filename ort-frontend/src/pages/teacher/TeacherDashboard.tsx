@@ -3,7 +3,8 @@ import { useQuestions, useDeleteQuestion } from '../../hooks/useQuestions';
 import { type Question } from '../../types/question';
 import { StatsCard } from '../../components/cards';
 import { QuestionCard } from '../../components/cards';
-import { QuestionForm, SmartSearchBar } from '../../components/forms';
+import { QuestionForm, SmartSearchBar, QuestionFilter } from '../../components/forms';
+import type { FilterOption } from '../../components/forms/QuestionFilter';
 
 export default function TeacherDashboard() {
   const { questions, loading, error, refetch } = useQuestions();
@@ -18,6 +19,7 @@ export default function TeacherDashboard() {
   const [deletingQuestionId, setDeletingQuestionId] = useState<number | null>(null);
   const [searchResults, setSearchResults] = useState<number[]>([]);
   const [hasSearched, setHasSearched] = useState(false);
+  const [selectedFilter, setSelectedFilter] = useState<FilterOption>('all');
 
   // Convert questions to QuestionItem format for search with enhanced context
   const searchableQuestions = useMemo(() => {
@@ -52,6 +54,7 @@ export default function TeacherDashboard() {
         totalOpenQuestions: openQuestions,
         totalClosedQuestions: closedQuestions,
       });
+
     }
   }, [questions]);
 
@@ -74,13 +77,31 @@ export default function TeacherDashboard() {
     setHasSearched(false);
   };
 
-  // Filter questions based on search results
+  const handleFilterChange = (filter: FilterOption) => {
+    setSelectedFilter(filter);
+  };
+
+  // Filter questions based on search results and status filter
   const displayedQuestions = useMemo(() => {
     if (!questions) return [];
-    if (!hasSearched) return questions;
-    if (searchResults.length === 0) return []; // Return empty array when search has no results
-    return questions.filter(q => searchResults.includes(q.id));
-  }, [questions, searchResults, hasSearched]);
+    
+    let filteredQuestions = questions;
+    
+    // Apply status filter
+    if (selectedFilter === 'open') {
+      filteredQuestions = filteredQuestions.filter(q => !q.is_closed);
+    } else if (selectedFilter === 'closed') {
+      filteredQuestions = filteredQuestions.filter(q => q.is_closed);
+    }
+    
+    // Apply search filter if searching
+    if (hasSearched) {
+      if (searchResults.length === 0) return []; // Return empty array when search has no results
+      filteredQuestions = filteredQuestions.filter(q => searchResults.includes(q.id));
+    }
+    
+    return filteredQuestions;
+  }, [questions, searchResults, hasSearched, selectedFilter]);
 
   const handleDeleteQuestion = async (questionId: number) => {
     setDeletingQuestionId(questionId);
@@ -185,17 +206,35 @@ export default function TeacherDashboard() {
             <h2 className="text-xl font-semibold text-neutral-900">Questions</h2>
           </div>
 
+          {/* Question Filter */}
+          <div className="flex flex-col space-y-3">
+            <div className="flex items-center justify-between">
+              <h3 className="text-sm font-medium text-neutral-700">Filter by Status</h3>
+            </div>
+            <QuestionFilter
+              selectedFilter={selectedFilter}
+              onFilterChange={handleFilterChange}
+              disabled={loading}
+            />
+          </div>
+
           {/* Smart Search */}
-          <SmartSearchBar
-            searchableQuestions={searchableQuestions}
-            onSearchResults={handleSearchResults}
-            onClearSearch={handleClearSearch}
-            disabled={loading}
-          />
+          <div className="flex flex-col space-y-3">
+            <div className="flex items-center justify-between">
+              <h3 className="text-sm font-medium text-neutral-700">Search Questions</h3>
+            </div>
+            <SmartSearchBar
+              searchableQuestions={searchableQuestions}
+              onSearchResults={handleSearchResults}
+              onClearSearch={handleClearSearch}
+              disabled={loading}
+            />
+          </div>
           
           {hasSearched && searchResults.length > 0 && (
             <p className="text-sm text-success-600" role="status">
-              Found {searchResults.length} matching question{searchResults.length !== 1 ? 's' : ''}
+              Found {displayedQuestions.length} matching question{displayedQuestions.length !== 1 ? 's' : ''}
+              {selectedFilter !== 'all' && ` (${selectedFilter} questions)`}
             </p>
           )}
         </div>
@@ -237,8 +276,15 @@ export default function TeacherDashboard() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
             </div>
-            <h3 className="text-lg font-medium text-neutral-900 mb-2">No questions yet</h3>
-            <p className="text-neutral-600">Questions will appear here once they are created.</p>
+            <h3 className="text-lg font-medium text-neutral-900 mb-2">
+              {selectedFilter !== 'all' ? `No ${selectedFilter} questions` : 'No questions yet'}
+            </h3>
+            <p className="text-neutral-600">
+              {selectedFilter !== 'all' 
+                ? `${selectedFilter === 'open' ? 'Open' : 'Closed'} questions will appear here once they are created.`
+                : 'Questions will appear here once they are created.'
+              }
+            </p>
           </div>
         )}
       </div>
