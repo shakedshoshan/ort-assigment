@@ -27,7 +27,13 @@ app = FastAPI(
 @app.on_event("startup")
 async def startup_event():
     """Initialize database tables on application startup."""
-    create_tables()
+    try:
+        create_tables()
+        print("✅ Database initialized successfully")
+    except Exception as e:
+        print(f"❌ Database initialization failed: {e}")
+        print("💡 Run 'py init_database.py' to set up your database")
+        raise
 
 # Add CORS middleware
 app.add_middleware(

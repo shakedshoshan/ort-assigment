@@ -16,7 +16,7 @@ backend/
 │   │       ├── __init__.py
 │   │       ├── students.py    # Student endpoints
 │   │       ├── questions.py   # Question endpoints (teacher)
-│   │       └── answers.py     # Answer endpoints (student)q
+│   │       └── answers.py     # Answer endpoints (student)
 │   ├── database/
 │   │   ├── __init__.py
 │   │   ├── config.py          # Database configuration
@@ -43,6 +43,10 @@ backend/
 │       ├── answer_service.py   # Answer business logic
 │       └── ai_service.py       # AI services (summarization & smart search)
 ├── requirements.txt           # Python dependencies
+├── setup.py                  # One-command setup script
+├── init_database.py          # Interactive database setup script
+├── .env                      # Environment variables (auto-created)
+├── ort.db                    # SQLite database (auto-created)
 └── README.md                 # This file
 ```
 
@@ -95,15 +99,25 @@ backend/
 
 ### Prerequisites
 - Python 3.8 or higher
-- Poetry (recommended) or pip
+- pip (Python package installer)
 
-### Install Poetry (if not already installed)
+### Quick Start (Recommended)
+
+**One-Command Setup:**
 ```bash
-# On Windows (PowerShell)
-(Invoke-WebRequest -Uri https://install.python-poetry.org -UseBasicParsing).Content | python -
+cd backend
+py setup.py
+```
 
-# On macOS/Linux
-curl -sSL https://install.python-poetry.org | python3 -
+This automatically:
+- ✅ Installs all required dependencies
+- ✅ Creates the database with all tables
+- ✅ Sets up environment configuration
+- ✅ Ready to run immediately!
+
+**Start the server:**
+```bash
+py -m app.main
 ```
 
 ### Setup and Run
@@ -114,57 +128,7 @@ curl -sSL https://install.python-poetry.org | python3 -
    poetry install
    ```
 
-2. **Run the Server** (npm-like commands):
-   
-   **Development mode (with auto-reload)**:
-   ```bash
-   poetry run dev
-   # or using Make
-   make dev
    ```
-   
-   **Production mode**:
-   ```bash
-   poetry run start
-   # or using Make
-   make start
-   ```
-
-3. **Other useful commands**:
-   ```bash
-   # Run tests
-   poetry run test
-   make test
-   
-   # Format code
-   poetry run format
-   make format
-   
-   # Lint code
-   poetry run lint
-   make lint
-   
-   # Clean cache files
-   make clean
-   
-   # Get help
-   make help
-   ```
-
-4. **Access the API**:
-   - API Base URL: http://localhost:8000
-   - Interactive API Documentation: http://localhost:8000/docs
-   - Alternative API Documentation: http://localhost:8000/redoc
-
-### Alternative: Using pip (without Poetry)
-
-If you prefer not to use Poetry:
-
-```bash
-cd backend
-pip install -r requirements.txt
-uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
-```
 
 ## Data Storage
 
@@ -209,6 +173,40 @@ If you experience slow database operations or errors with custom paths:
 2. **Avoid spaces in directory names**: Use `C:\Users\shake\Desktop\Builds` instead of `C:\Users\shake\Desktop\Builds (Copy)`
 3. **Ensure directory permissions**: Make sure the application has write access to the target directory
 4. **Use forward slashes**: The application automatically converts Windows backslashes to forward slashes for SQLite URLs
+
+#### **Environment Variables**
+
+Make sure your `.env` file contains:
+```env
+DATABASE_PATH=./ort.db
+```
+
+#### **Verification Steps**
+
+1. **Check if database exists**:
+   ```bash
+   dir *.db
+   # Should show ort.db file
+   ```
+
+2. **Check environment file**:
+   ```bash
+   type .env
+   # Should show DATABASE_PATH=./ort.db
+   ```
+
+3. **Test database connection**:
+   ```bash
+   py -c "from app.database.config import get_database_path; print(get_database_path())"
+   ```
+
+#### **Getting Help**
+
+If you're still having issues:
+1. Check the console output for specific error messages
+2. Verify all dependencies are installed: `pip install -r requirements.txt`
+3. Try the quick setup: `py init_database.py --quick`
+4. Check the API documentation at http://localhost:8000/docs
 
 ## Development
 
