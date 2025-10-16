@@ -45,6 +45,7 @@ ort-frontend/src/
 │   ├── forms/           # Form components
 │   │   ├── AccessCodeForm.tsx   # Access code entry form
 │   │   ├── AnswerForm.tsx       # Answer submission form
+│   │   ├── QuestionForm.tsx     # Question creation form
 │   │   └── index.ts            # Form exports
 │   ├── layout/          # Layout components
 │   │   ├── AppLayout.tsx        # Main application layout
@@ -85,6 +86,7 @@ ort-frontend/src/
 **Components Layer**: Reusable UI components organized by purpose
 - **Cards**: Data display components with consistent styling
 - **Forms**: Form-specific components with validation logic
+  - **QuestionForm**: Reusable component for creating new questions with title, text, and access code fields
 - **Layout**: Structural components for page layout
 - **UI**: Utility components for common UI patterns
 
@@ -98,9 +100,10 @@ ort-frontend/src/
 **Teacher Flow**:
 1. Access Teacher Dashboard (`/teacher`)
 2. View question statistics and list
-3. Click "View Details" on any question
-4. Navigate to Question View (`/teacher/questions/:id`)
-5. Review student answers and question details
+3. Create new questions using the QuestionForm component
+4. Click "View Details" on any question
+5. Navigate to Question View (`/teacher/questions/:id`)
+6. Review student answers and question details
 
 **Student Flow**:
 1. Access Student Form (`/student`)
@@ -154,6 +157,46 @@ The frontend uses a custom Tailwind CSS theme with:
 - **Component Classes**: Pre-built classes for buttons, forms, cards, badges
 - **Responsive Design**: Mobile-first approach with responsive utilities
 - **Accessibility**: Focus states, proper contrast, semantic HTML
+
+### Component Documentation
+
+#### QuestionForm Component
+
+The `QuestionForm` component is a reusable form for creating new classroom questions. It provides a clean, user-friendly interface for teachers to input question details.
+
+**Features**:
+- **Form Fields**: Title, question text, and access code inputs
+- **Validation**: Client-side validation with required field checking
+- **Error Handling**: Displays API errors and validation messages
+- **Success Feedback**: Shows success message upon successful creation
+- **Loading States**: Visual feedback during form submission
+- **Customizable**: Optional cancel button and success callbacks
+
+**Props**:
+```typescript
+interface QuestionFormProps {
+  onSuccess?: () => void;        // Callback when question is created successfully
+  onCancel?: () => void;         // Callback when form is cancelled
+  showCancelButton?: boolean;    // Whether to show the cancel button (default: true)
+}
+```
+
+**Usage Example**:
+```tsx
+<QuestionForm
+  onSuccess={() => {
+    console.log('Question created!');
+    // Refresh questions list or close form
+  }}
+  onCancel={() => {
+    console.log('Form cancelled');
+    // Close form or reset state
+  }}
+  showCancelButton={true}
+/>
+```
+
+**Integration**: The component uses the `useCreateQuestion` hook internally for API communication and state management, ensuring consistent error handling and loading states across the application.
 
 ## Backend API
 

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { type Question, type QuestionCreate, type QuestionResponse, type Answer, type QuestionWithAnswers } from '../types/index';
+import { type Question, type QuestionCreate, type QuestionResponse, type QuestionWithAnswers } from '../types/index';
 
 const API_BASE_URL = 'http://localhost:8000/api/v1/questions';
 

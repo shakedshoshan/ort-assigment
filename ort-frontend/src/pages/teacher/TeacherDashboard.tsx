@@ -3,14 +3,16 @@ import { useQuestions } from '../../hooks/useQuestions';
 import { type Question } from '../../types/question';
 import { StatsCard } from '../../components/cards';
 import { QuestionCard } from '../../components/cards';
+import { QuestionForm } from '../../components/forms';
 
 export default function TeacherDashboard() {
-  const { questions, loading, error } = useQuestions();
+  const { questions, loading, error, refetch } = useQuestions();
   const [stats, setStats] = useState({
     totalQuestions: 0,
     totalOpenQuestions: 0,
     totalClosedQuestions: 0,
   });
+  const [showCreateForm, setShowCreateForm] = useState(false);
 
   useEffect(() => {
     if (questions) {
@@ -24,6 +26,15 @@ export default function TeacherDashboard() {
       });
     }
   }, [questions]);
+
+  const handleQuestionCreated = () => {
+    setShowCreateForm(false);
+    refetch(); // Refresh the questions list
+  };
+
+  const handleCancelCreate = () => {
+    setShowCreateForm(false);
+  };
 
   if (loading) {
     return (
@@ -51,6 +62,12 @@ export default function TeacherDashboard() {
             Manage questions and view student answers
           </p>
         </div>
+        <button
+          onClick={() => setShowCreateForm(!showCreateForm)}
+          className="btn btn-primary"
+        >
+          {showCreateForm ? 'Cancel' : 'Create Question'}
+        </button>
       </div>
 
       {/* Stats Cards */}
@@ -74,6 +91,15 @@ export default function TeacherDashboard() {
           color="warning"
         />
       </div>
+
+      {/* Create Question Form */}
+      {showCreateForm && (
+        <QuestionForm
+          onSuccess={handleQuestionCreated}
+          onCancel={handleCancelCreate}
+          showCancelButton={true}
+        />
+      )}
 
       {/* Questions List */}
       <div className="card">
