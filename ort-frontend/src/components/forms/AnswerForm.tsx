@@ -17,6 +17,13 @@ export function AnswerForm({ question, onSubmit, loading = false, onBack }: Answ
     await onSubmit(answerText.trim());
   };
 
+  const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const value = e.target.value;
+    if (value.length <= 200) {
+      setAnswerText(value);
+    }
+  };
+
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <div className="card">
@@ -45,10 +52,20 @@ export function AnswerForm({ question, onSubmit, loading = false, onBack }: Answ
             rows={6}
             placeholder="Type your answer here..."
             value={answerText}
-            onChange={(e) => setAnswerText(e.target.value)}
+            onChange={handleTextChange}
             disabled={question.is_closed}
             required
           />
+          <div className="flex justify-between items-center mt-2">
+            <div className="text-sm text-neutral-500">
+              {answerText.length}/200 characters
+            </div>
+            {answerText.length >= 200 && (
+              <div className="text-sm text-error-600">
+                Character limit reached
+              </div>
+            )}
+          </div>
           {question.is_closed && (
             <p className="text-sm text-error-600 mt-2">
               This question is closed and no longer accepting answers.

@@ -63,14 +63,6 @@ export default function StudentForm() {
     return <LoadingSpinner size="lg" />;
   }
 
-  if (questionError || submitError) {
-    return (
-      <ErrorAlert 
-        title="Error"
-        message={questionError || submitError || 'An error occurred'}
-      />
-    );
-  }
 
   if (submitted) {
     return (
@@ -92,10 +84,10 @@ export default function StudentForm() {
         </p>
       </div>
 
-      {error && (
+      {(error || questionError || submitError) && (
         <ErrorAlert 
           title="Error"
-          message={error}
+          message={error || questionError || submitError || 'An error occurred'}
         />
       )}
 
