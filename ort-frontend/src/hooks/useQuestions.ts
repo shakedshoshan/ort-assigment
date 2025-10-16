@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { type Question, type QuestionCreate, type QuestionResponse, type QuestionWithAnswers } from '../types/index';
 
-const API_BASE_URL = 'http://localhost:8000/api/v1/questions';
+const API_BASE_URL = import.meta.env.VITE_API_QUESTIONS_URL || '';
 
 /**
  * Hook to fetch questions with optional status filtering

@@ -10,9 +10,11 @@ class StudentBase(BaseModel):
     """Base model for student data."""
     name: str
 
+
 class StudentCreate(StudentBase):
     """Model for creating a new student."""
     pass
+
 
 class StudentUpdate(BaseModel):
     """Model for updating an existing student."""

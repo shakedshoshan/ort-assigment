@@ -240,6 +240,7 @@ uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
 
 - **Student Management**: Full CRUD operations for student data
 - **Classroom Q&A System**: Complete question and answer functionality
+- **AI Summarization**: OpenAI-powered analysis of student responses
 - **SQLite Database**: Persistent storage with SQLAlchemy ORM
 - **Role-Based API**: Separate endpoints for teachers and students
 - **Auto Documentation**: Interactive Swagger UI and ReDoc documentation
@@ -267,6 +268,72 @@ uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
 #### Student Endpoints (Answers)
 - `GET /api/v1/answers/question/{access_code}` - Identify and retrieve a question for answering
 - `POST /api/v1/answers/submit` - Submit a new answer or update an existing answer
+
+#### AI Endpoints (Teacher)
+- `POST /api/v1/ai/summarize` - Generate an AI-powered summary of student answers
+
+## AI Summarization Feature
+
+The system includes an AI-powered summarization service that helps teachers analyze student responses to classroom questions. This feature uses OpenAI's language models to generate comprehensive summaries based on custom instructions.
+
+### Features
+
+- **Dynamic Instructions**: Teachers can provide specific summarization instructions for each question
+- **Student Analysis**: Identifies students with the deepest understanding
+- **Confusion Detection**: Highlights common areas of confusion across the class
+- **Flexible Formatting**: Supports various output formats and structures
+- **Error Handling**: Robust error handling with meaningful error messages
+
+### Usage
+
+#### Request Format
+
+```json
+{
+  "context": {
+    "question_id": 123,
+    "question_text": "What is the primary difference between Ecology and Climate?",
+    "summary_instructions": "Summarize the student answers into 3 main learning points. List the names of 2-3 students who demonstrated the deepest understanding, and mention one common area of confusion."
+  },
+  "student_answers": [
+    {
+      "student_id": "1",
+      "student_name": "John Doe",
+      "answer_text": "Ecology studies living organisms and their environment...",
+      "submitted_at": "2024-10-16T10:00:00Z"
+    }
+  ]
+}
+```
+
+#### Response Format
+
+```json
+{
+  "summary": "Based on the student responses, three main learning points emerge: 1) Ecology focuses on living organisms and their environment... The students who demonstrated the deepest understanding were John Doe and Jane Smith... A common area of confusion was the relationship between climate and weather patterns."
+}
+```
+
+### Configuration
+
+Set the following environment variables to configure the AI service:
+
+```bash
+# Required
+OPENAI_API_KEY="your-openai-api-key"
+
+# Optional (with defaults)
+OPENAI_MODEL="gpt-3.5-turbo"  # Model to use
+```
+
+### Integration
+
+The AI summarization service integrates seamlessly with the existing classroom Q&A system:
+
+1. **Teacher Workflow**: After viewing student answers, teachers can request AI summaries
+2. **Custom Instructions**: Each summary can be tailored with specific analysis requirements
+3. **Student Insights**: AI identifies patterns and highlights exceptional responses
+4. **Educational Value**: Helps teachers understand class comprehension and adjust teaching
 
 ## Development Principles
 

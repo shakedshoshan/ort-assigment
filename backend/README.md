@@ -76,6 +76,10 @@ backend/
 - `GET /api/v1/answers/question/{access_code}` - Identify and retrieve a question for answering
 - `POST /api/v1/answers/submit` - Submit a new answer or update an existing answer
 
+### AI API (`/api/v1/ai`) - Teacher Endpoints
+
+- `POST /api/v1/ai/summarize` - Generate an AI-powered summary of student answers
+
 ### General Endpoints
 
 - `GET /` - Root endpoint with welcome message
@@ -176,15 +180,17 @@ The application now uses **SQLite database** with SQLAlchemy ORM for data persis
 
 ### Environment Configuration
 
-You can configure the database using environment variables:
+You can configure the application using environment variables:
 
 ```bash
-# SQLite Database Path (recommended for SQLite)
-# Controls where the SQLite database file is saved
+# Database Configuration
+DATABASE_PATH="./app.db"  # SQLite database path (default)
 
-# Windows Examples:
-DATABASE_PATH="C:\Users\shake\Desktop\Builds\database.db"  # Windows absolute path
-DATABASE_PATH="./app.db"                                   # Relative path (default)
+# OpenAI Configuration
+OPENAI_API_KEY=""        # Your OpenAI API key
+OPENAI_MODEL="gpt-4-turbo-preview"  # Model to use (default)
+OPENAI_TEMPERATURE="0.7"  # Temperature for generation (default)
+OPENAI_MAX_TOKENS="2000"  # Maximum tokens for response (default)
 
 
 **Note**: When using `DATABASE_PATH`, the application automatically creates the directory if it doesn't exist.

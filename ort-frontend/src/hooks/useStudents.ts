@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { type Student} from '../types/index';
 
-const API_BASE_URL = 'http://localhost:8000/api/v1/students';
+const API_BASE_URL = import.meta.env.VITE_API_STUDENTS_URL || '';
 
 /**
  * Hook to fetch and manage all students
