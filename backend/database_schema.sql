@@ -7,8 +7,8 @@ CREATE TABLE questions (
     title TEXT NOT NULL,
     text TEXT NOT NULL,
     access_code TEXT NOT NULL UNIQUE,
-    is_closed INTEGER NOT NULL DEFAULT 0
-    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    is_closed INTEGER NOT NULL DEFAULT 0,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Create index on title for better query performance

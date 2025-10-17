@@ -4,6 +4,7 @@ export interface Question {
   text: string;
   access_code: string;
   is_closed: boolean;
+  created_at: string;
 }
 
 export interface QuestionCreate {

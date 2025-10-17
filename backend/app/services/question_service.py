@@ -5,7 +5,7 @@ This module handles business logic for question operations.
 
 from typing import List, Dict, Any, Optional
 from fastapi import HTTPException
-
+from datetime import datetime
 try:
     from app.database.repositories.question_repository import QuestionRepository
 except ImportError:
@@ -177,5 +177,6 @@ class QuestionService:
             "title": question.title,
             "text": question.text,
             "access_code": question.access_code,
-            "is_closed": bool(question.is_closed)
+            "is_closed": bool(question.is_closed),
+            "created_at": question.created_at.isoformat() if question.created_at else None
         }
