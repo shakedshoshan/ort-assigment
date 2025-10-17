@@ -1,0 +1,39 @@
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/app
+      - /app/__pycache__
+    environment:
+      - PYTHONPATH=/app
+      - DATABASE_PATH=/app/app.db
+      - DOCKER_CONTAINER=true
+    networks:
+      - ort-network
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./ort-frontend
+      dockerfile: Dockerfile
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./ort-frontend:/app
+      - /app/node_modules
+    environment:
+      - VITE_API_URL=http://localhost:8000
+    networks:
+      - ort-network
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+networks:
+  ort-network:
+    driver: bridge
+

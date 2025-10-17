@@ -36,8 +36,12 @@ def get_database_path() -> str:
     print(f"Directory exists: {db_dir.exists()}")
     print(f"Directory is writable: {os.access(db_dir, os.W_OK)}")
     
-    # Return absolute path to avoid issues with relative paths
-    return str(db_path.absolute())
+    # For Docker containers, use the path as-is if it's already absolute
+    # For local development, convert to absolute path
+    if database_path.startswith('/') or os.getenv('DOCKER_CONTAINER'):
+        return str(db_path)
+    else:
+        return str(db_path.absolute())
 
 def build_database_url(database_path: str) -> str:
     """
@@ -53,11 +57,12 @@ def build_database_url(database_path: str) -> str:
     # Convert Windows backslashes to forward slashes for SQLite URL
     normalized_path = str(Path(database_path)).replace('\\', '/')
     
-    # Ensure path starts with / for absolute paths
-    if not normalized_path.startswith('/'):
-        normalized_path = '/' + normalized_path
-    
-    return f"sqlite://{normalized_path}"
+    # For absolute paths, use sqlite:/// (three slashes)
+    # For relative paths, use sqlite:/// (three slashes) with leading slash
+    if normalized_path.startswith('/'):
+        return f"sqlite://{normalized_path}"
+    else:
+        return f"sqlite:///{normalized_path}"
 
 # Build database URL from path
 DATABASE_PATH = get_database_path()

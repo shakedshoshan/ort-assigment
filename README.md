@@ -21,6 +21,54 @@ This project contains a FastAPI backend server and a React TypeScript frontend f
 - Better error handling and logging for debugging
 - Optimized search suggestions and user guidance
 
+## Quick Start with Docker
+
+**Simple setup for development:**
+
+```bash
+# Start both backend and frontend
+docker-compose up --build
+
+# Access the application
+# Frontend: http://localhost:5173
+# Backend API: http://localhost:8000
+# API Docs: http://localhost:8000/docs
+```
+
+**Stop services:**
+```bash
+docker-compose down
+```
+
+### Docker Setup Details
+
+The project includes a complete Docker setup for easy development and deployment:
+
+**Services:**
+- **Backend**: FastAPI server running on Python 3.11 with auto-reload
+- **Frontend**: React + Vite development server on Node.js 22
+
+**Features:**
+- **Volume Mounts**: Live code changes are reflected immediately
+- **Networking**: Services communicate via Docker network
+- **Environment**: Pre-configured with all dependencies
+- **Ports**: Backend (8000), Frontend (5173)
+
+**Development Commands:**
+```bash
+# Start in background
+docker-compose up -d --build
+
+# View logs
+docker-compose logs -f
+
+# Rebuild specific service
+docker-compose up --build backend
+
+# Stop and remove containers
+docker-compose down
+```
+
 ## Project Structure
 
 ```
@@ -41,6 +89,7 @@ ort-assigment/
 │   └── README.md          # Frontend documentation
 ├── data/
 │   └── students.json      # Student data storage
+├── docker-compose.yml     # Docker setup
 └── README.md              # This file
 ```
 
