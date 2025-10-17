@@ -21,10 +21,17 @@ def get_database_path() -> str:
     Returns:
         str: Path to the SQLite database file
     """
+    # Get database path from environment variable or use default
     database_path = os.getenv("DATABASE_PATH", "./app.db")
     
     # Convert to Path object for better handling
     db_path = Path(database_path)
+    
+    # If it's a relative path, make it relative to the backend directory
+    if not db_path.is_absolute():
+        # Get the backend directory (parent of this config file's directory)
+        backend_dir = Path(__file__).parent.parent.parent
+        db_path = backend_dir / db_path
     
     # Always ensure the directory exists
     db_dir = db_path.parent
@@ -36,12 +43,7 @@ def get_database_path() -> str:
     print(f"Directory exists: {db_dir.exists()}")
     print(f"Directory is writable: {os.access(db_dir, os.W_OK)}")
     
-    # For Docker containers, use the path as-is if it's already absolute
-    # For local development, convert to absolute path
-    if database_path.startswith('/') or os.getenv('DOCKER_CONTAINER'):
-        return str(db_path)
-    else:
-        return str(db_path.absolute())
+    return str(db_path.absolute())
 
 def build_database_url(database_path: str) -> str:
     """
