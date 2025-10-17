@@ -1,6 +1,7 @@
 
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import AppLayout from './components/layout/AppLayout';
+import { AuthGuard } from './components/layout';
 import { TeacherDashboard, QuestionView, StudentForm } from './pages';
 import './App.css';
 
@@ -12,9 +13,17 @@ function App() {
           {/* Redirect root to teacher dashboard */}
           <Route path="/" element={<Navigate to="/teacher" replace />} />
           
-          {/* Teacher routes */}
-          <Route path="/teacher" element={<TeacherDashboard />} />
-          <Route path="/teacher/questions/:id" element={<QuestionView />} />
+          {/* Teacher routes - Protected by authentication */}
+          <Route path="/teacher" element={
+            <AuthGuard>
+              <TeacherDashboard />
+            </AuthGuard>
+          } />
+          <Route path="/teacher/questions/:id" element={
+            <AuthGuard>
+              <QuestionView />
+            </AuthGuard>
+          } />
           
           {/* Student route */}
           <Route path="/student" element={<StudentForm />} />

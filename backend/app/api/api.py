@@ -5,10 +5,10 @@ This module contains the main API router that includes all endpoint routers.
 
 from fastapi import APIRouter
 try:
-    from app.api.endpoints import students, questions, answers, ai
+    from app.api.endpoints import students, questions, answers, ai, auth
 except ImportError:
     # Fallback for direct execution
-    from .endpoints import students, questions, answers, ai
+    from .endpoints import students, questions, answers, ai, auth
 
 # Create main API router
 api_router = APIRouter()
@@ -36,5 +36,11 @@ api_router.include_router(
     ai.router,
     prefix="/ai",
     tags=["ai"]
+)
+
+api_router.include_router(
+    auth.router,
+    prefix="/auth",
+    tags=["authentication"]
 )
 

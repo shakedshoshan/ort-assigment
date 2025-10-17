@@ -1,5 +1,6 @@
 import { useEffect, useState, useMemo } from 'react';
 import { useQuestions, useDeleteQuestion } from '../../hooks/useQuestions';
+import { useAuth } from '../../hooks/useAuth';
 import { type Question } from '../../types/question';
 import { StatsCard } from '../../components/cards';
 import { QuestionCard } from '../../components/cards';
@@ -9,6 +10,7 @@ import type { FilterOption } from '../../components/forms/QuestionFilter';
 export default function TeacherDashboard() {
   const { questions, loading, error, refetch } = useQuestions();
   const { deleteQuestion, error: deleteError } = useDeleteQuestion();
+  const { logout } = useAuth();
   
   const [stats, setStats] = useState({
     totalQuestions: 0,
@@ -160,12 +162,34 @@ export default function TeacherDashboard() {
             Manage questions and view student answers
           </p>
         </div>
-        <button
-          onClick={() => setShowCreateForm(!showCreateForm)}
-          className="btn btn-primary"
-        >
-          {showCreateForm ? 'Cancel' : 'Create Question'}
-        </button>
+        <div className="flex space-x-3">
+          <button
+            onClick={() => setShowCreateForm(!showCreateForm)}
+            className="btn btn-primary"
+          >
+            {showCreateForm ? 'Cancel' : 'Create Question'}
+          </button>
+          <button
+            onClick={logout}
+            className="btn btn-outline"
+            title="Logout (valid for 24 hours)"
+          >
+            <svg 
+              className="w-4 h-4 mr-2" 
+              fill="none" 
+              stroke="currentColor" 
+              viewBox="0 0 24 24"
+            >
+              <path 
+                strokeLinecap="round" 
+                strokeLinejoin="round" 
+                strokeWidth={2} 
+                d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" 
+              />
+            </svg>
+            Logout
+          </button>
+        </div>
       </div>
 
       {/* Stats Cards */}

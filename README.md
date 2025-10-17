@@ -470,9 +470,52 @@ uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
 - `GET /api/v1/answers/question/{access_code}` - Identify and retrieve a question for answering
 - `POST /api/v1/answers/submit` - Submit a new answer or update an existing answer
 
+#### Authentication Endpoints
+- `POST /api/v1/auth/login` - Teacher login using passcode validation
+
+### Frontend Authentication Integration
+
+The frontend now includes a complete teacher authentication system that protects the teacher dashboard and related pages.
+
+**Key Features**:
+- **Passcode-based Authentication**: Teachers must enter a passcode to access the dashboard
+- **24-hour Session**: Authentication persists in localStorage for 24 hours
+- **Automatic Expiration**: Sessions automatically expire after 24 hours
+- **Route Protection**: All teacher routes (`/teacher`, `/teacher/questions/:id`) are protected
+- **Logout Functionality**: Teachers can logout manually from any teacher page
+- **Error Handling**: Clear error messages for failed authentication attempts
+
+**User Experience**:
+1. **Access Attempt**: When visiting `/teacher` route without authentication
+2. **Login Form**: Beautiful, accessible login form with passcode input
+3. **Authentication**: Passcode validated against backend API
+4. **Success**: Redirected to teacher dashboard with 24-hour session
+5. **Session Management**: Automatic session expiration and logout options
+
+**Implementation Details**:
+- **Hook**: `useAuth()` provides authentication state and methods
+- **Component**: `TeacherLogin` component for passcode entry
+- **Guard**: `AuthGuard` component protects teacher routes
+- **Storage**: localStorage with timestamp-based expiration
+- **UI**: Consistent with existing design system and accessibility standards
+
 #### AI Endpoints (Teacher)
 - `POST /api/v1/ai/summarize` - Generate an AI-powered summary of student answers
 - `POST /api/v1/ai/smart-search` - Perform semantic search to find relevant questions
+
+## Authentication
+
+The system includes a simple teacher authentication mechanism using passcode validation.
+
+### Teacher Login Feature
+
+The teacher login endpoint provides secure access control for teacher-specific functionality using a configurable passcode.
+
+**Key Features**:
+- **Passcode Validation**: Simple string-based authentication against environment variable
+- **Environment Configuration**: Uses `TEACHER_PASSCODE` environment variable for security
+- **Boolean Response**: Returns clear success/failure status
+- **Error Handling**: Comprehensive error handling for configuration issues
 
 ## AI Features
 

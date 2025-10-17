@@ -16,3 +16,4 @@ export * from './useStudents';
 export * from './useQuestions';
 export * from './useAnswers';
 export * from './useAI';
+export * from './useAuth';
