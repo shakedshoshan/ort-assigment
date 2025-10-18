@@ -35,13 +35,23 @@ def get_database_path() -> str:
     
     # Always ensure the directory exists
     db_dir = db_path.parent
-    db_dir.mkdir(parents=True, exist_ok=True)
+    try:
+        db_dir.mkdir(parents=True, exist_ok=True)
+    except Exception as e:
+        # If we can't create the directory, fall back to a temp directory
+        import tempfile
+        temp_dir = Path(tempfile.gettempdir()) / "ort_assignment"
+        temp_dir.mkdir(parents=True, exist_ok=True)
+        db_path = temp_dir / db_path.name
+        db_dir = temp_dir
+        print(f"Warning: Could not create database directory, using temp: {db_path}")
     
-    # Print debug info to help troubleshoot
-    print(f"Database path: {db_path}")
-    print(f"Database directory: {db_dir}")
-    print(f"Directory exists: {db_dir.exists()}")
-    print(f"Directory is writable: {os.access(db_dir, os.W_OK)}")
+    # Print debug info to help troubleshoot (only in non-CI environments)
+    if not os.getenv("CI") and not os.getenv("GITHUB_ACTIONS"):
+        print(f"Database path: {db_path}")
+        print(f"Database directory: {db_dir}")
+        print(f"Directory exists: {db_dir.exists()}")
+        print(f"Directory is writable: {os.access(db_dir, os.W_OK)}")
     
     return str(db_path.absolute())
 
@@ -70,8 +80,9 @@ def build_database_url(database_path: str) -> str:
 DATABASE_PATH = get_database_path()
 DATABASE_URL = build_database_url(DATABASE_PATH)
 
-# Print debug info
-print(f"Final database URL: {DATABASE_URL}")
+# Print debug info (only in non-CI environments)
+if not os.getenv("CI") and not os.getenv("GITHUB_ACTIONS"):
+    print(f"Final database URL: {DATABASE_URL}")
 
 # Create SQLAlchemy engine with optimized settings
 engine = create_engine(

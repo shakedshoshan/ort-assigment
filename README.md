@@ -245,28 +245,9 @@ The `QuestionForm` component is a reusable form for creating new classroom quest
 - **Customizable**: Optional cancel button and success callbacks
 
 **Props**:
-```typescript
-interface QuestionFormProps {
-  onSuccess?: () => void;        // Callback when question is created successfully
-  onCancel?: () => void;         // Callback when form is cancelled
-  showCancelButton?: boolean;    // Whether to show the cancel button (default: true)
-}
-```
-
-**Usage Example**:
-```tsx
-<QuestionForm
-  onSuccess={() => {
-    console.log('Question created!');
-    // Refresh questions list or close form
-  }}
-  onCancel={() => {
-    console.log('Form cancelled');
-    // Close form or reset state
-  }}
-  showCancelButton={true}
-/>
-```
+- `onSuccess?`: Callback when question is created successfully
+- `onCancel?`: Callback when form is cancelled  
+- `showCancelButton?`: Whether to show the cancel button (default: true)
 
 **Integration**: The component uses the `useCreateQuestion` hook internally for API communication and state management, ensuring consistent error handling and loading states across the application.
 
@@ -279,15 +260,9 @@ The `useAI` hook provides a clean interface for AI-powered features, including b
 - **`useSmartSearch`**: Performs semantic search to find relevant questions
 
 **Smart Search Hook**:
-```typescript
-const { smartSearch, loading, error } = useSmartSearch();
-
-// Usage
-const result = await smartSearch({
-  query: "Find questions about environmental impact",
-  available_questions: searchableQuestions
-});
-```
+- `smartSearch`: Function to perform semantic search
+- `loading`: Boolean indicating if search is in progress
+- `error`: Error state if search fails
 
 **Features**:
 - **Type Safety**: Full TypeScript support with proper interfaces
@@ -313,24 +288,10 @@ The `SmartSearchBar` component provides an intuitive interface for teachers to p
 - **Enhanced Examples**: Clear examples showing how to search by subject area
 
 **Props**:
-```typescript
-interface SmartSearchBarProps {
-  searchableQuestions: QuestionItem[];  // Questions to search through (max 20)
-  onSearchResults: (results: number[]) => void;  // Callback for search results
-  onClearSearch: () => void;  // Callback for clearing search
-  disabled?: boolean;  // Optional disabled state
-}
-```
-
-**Usage Example**:
-```tsx
-<SmartSearchBar
-  searchableQuestions={searchableQuestions}
-  onSearchResults={handleSearchResults}
-  onClearSearch={handleClearSearch}
-  disabled={loading}
-/>
-```
+- `searchableQuestions`: Questions to search through (max 20)
+- `onSearchResults`: Callback for search results
+- `onClearSearch`: Callback for clearing search
+- `disabled?`: Optional disabled state
 
 **Integration**: The component uses the `useSmartSearch` hook internally for API communication, providing consistent error handling and loading states. It automatically limits searches to the first 20 questions for optimal performance.
 
@@ -546,25 +507,11 @@ The AI smart search service enables teachers to perform semantic searches across
 - "general knowledge" - finds general knowledge questions
 
 **Request Format**:
-```json
-{
-  "query": "Find questions about human impact on the environment and sustainability policies.",
-  "available_questions": [
-    {"id": 101, "text": "What are the three forms of matter?"},
-    {"id": 102, "text": "Discuss the pros and cons of implementing a carbon tax to reduce pollution."},
-    {"id": 103, "text": "Analyze the role of NGOs in promoting sustainable development goals."},
-    {"id": 104, "text": "Describe the main battles of World War I."},
-    {"id": 105, "text": "How does plastic consumption directly affect marine ecosystems?"}
-  ]
-}
-```
+- `query`: Natural language search query
+- `available_questions`: Array of questions to search through
 
 **Response Format**:
-```json
-{
-  "matching_question_ids": [102, 103, 105]
-}
-```
+- `matching_question_ids`: Array of matching question IDs
 
 ### Backend Implementation
 
@@ -588,32 +535,11 @@ The AI summarization service uses a robust HTTP-based approach that directly com
 ### Usage
 
 #### Request Format
-
-```json
-{
-  "context": {
-    "question_id": 123,
-    "question_text": "What is the primary difference between Ecology and Climate?",
-    "summary_instructions": "Summarize the student answers into 3 main learning points. List the names of 2-3 students who demonstrated the deepest understanding, and mention one common area of confusion."
-  },
-  "student_answers": [
-    {
-      "student_id": "1",
-      "student_name": "John Doe",
-      "answer_text": "Ecology studies living organisms and their environment...",
-      "submitted_at": "2024-10-16T10:00:00Z"
-    }
-  ]
-}
-```
+- `context`: Question details and summary instructions
+- `student_answers`: Array of student responses with metadata
 
 #### Response Format
-
-```json
-{
-  "summary": "Based on the student responses, three main learning points emerge: 1) Ecology focuses on living organisms and their environment... The students who demonstrated the deepest understanding were John Doe and Jane Smith... A common area of confusion was the relationship between climate and weather patterns."
-}
-```
+- `summary`: Generated AI summary text
 
 ### Backend Technical Details
 
@@ -640,17 +566,13 @@ The AI service uses a direct HTTP approach to communicate with OpenAI's API, avo
 
 ### Configuration
 
-Set the following environment variables to configure the AI service:
+**Required Environment Variables**:
+- `OPENAI_API_KEY`: Your OpenAI API key
 
-```bash
-# Required
-OPENAI_API_KEY="your-openai-api-key"
-
-# Optional (with defaults)
-OPENAI_MODEL="gpt-3.5-turbo"  # Model to use
-OPENAI_TEMPERATURE="0.7"      # Response creativity (0.0-1.0)
-OPENAI_MAX_TOKENS="2000"      # Maximum response length
-```
+**Optional Environment Variables**:
+- `OPENAI_MODEL`: Model to use (default: gpt-3.5-turbo)
+- `OPENAI_TEMPERATURE`: Response creativity 0.0-1.0 (default: 0.7)
+- `OPENAI_MAX_TOKENS`: Maximum response length (default: 2000)
 
 ### Complete Workflow
 
@@ -738,14 +660,12 @@ The project includes comprehensive testing coverage for both backend and fronten
 
 **Backend Tests**:
 ```bash
-cd backend
-py run_tests.py
+cd backend && python run_tests.py
 ```
 
 **Frontend Tests**:
 ```bash
-cd ort-frontend
-npm run test
+cd ort-frontend && npm run test
 ```
 
 ### Test Architecture
@@ -806,19 +726,9 @@ This architecture ensures:
 
 ### Complete System Architecture
 
-The ORT Assignment system consists of two main parts working together:
-
-```
-┌─────────────────┐    HTTP/REST API    ┌─────────────────┐
-│   Frontend      │ ◄─────────────────► │   Backend       │
-│   (React/TS)    │                     │   (FastAPI)     │
-│                 │                     │                 │
-│ • Teacher UI    │                     │ • Question API  │
-│ • Student UI    │                     │ • Answer API    │
-│ • State Mgmt    │                     │ • Database      │
-│ • Routing       │                     │ • Validation    │
-└─────────────────┘                     └─────────────────┘
-```
+**Frontend (React/TS)** ↔ **HTTP/REST API** ↔ **Backend (FastAPI)**
+- Teacher UI, Student UI, State Management, Routing
+- Question API, Answer API, Database, Validation
 
 ### End-to-End User Flows
 
@@ -839,13 +749,9 @@ The ORT Assignment system consists of two main parts working together:
 
 ### Data Flow
 
-```
-Frontend Component → Custom Hook → API Call → Backend Endpoint → Database
-       ↓                    ↓           ↓            ↓              ↓
-   User Action        State Update   HTTP Request   Validation   Data Storage
-       ↑                    ↑           ↑            ↑              ↑
-   UI Update          Hook Response  HTTP Response  Business Logic  Data Retrieval
-```
+**Frontend Component** → **Custom Hook** → **API Call** → **Backend Endpoint** → **Database**
+- User Action → State Update → HTTP Request → Validation → Data Storage
+- UI Update ← Hook Response ← HTTP Response ← Business Logic ← Data Retrieval
 
 ### Integration Points
 
@@ -868,23 +774,21 @@ Frontend Component → Custom Hook → API Call → Backend Endpoint → Databas
 
 #### **Running Both Services**
 
-1. **Start Backend**:
-   ```bash
-   cd backend
-   poetry run dev
-   # API available at http://localhost:8000
-   ```
+**Backend**:
+```bash
+cd backend && poetry run dev
+# API available at http://localhost:8000
+```
 
-2. **Start Frontend** (in new terminal):
-   ```bash
-   cd ort-frontend
-   npm run dev
-   # Frontend available at http://localhost:5173
-   ```
+**Frontend** (in new terminal):
+```bash
+cd ort-frontend && npm run dev
+# Frontend available at http://localhost:5173
+```
 
-3. **Access Application**:
-   - Frontend: http://localhost:5173
-   - Backend API Docs: http://localhost:8000/docs
+**Access Application**:
+- Frontend: http://localhost:5173
+- Backend API Docs: http://localhost:8000/docs
 
 #### **Development Features**
 - **Hot Reload**: Both frontend and backend support live reloading

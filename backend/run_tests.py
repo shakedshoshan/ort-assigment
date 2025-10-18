@@ -36,9 +36,21 @@ def run_tests():
     print("Running ORT Assignment Backend Tests...")
     print("=" * 50)
     
-    # Change to backend directory
+    # Get the backend directory (where this script is located)
     backend_dir = os.path.dirname(os.path.abspath(__file__))
-    os.chdir(backend_dir)
+    
+    # Only change directory if we're not already in the backend directory
+    current_dir = os.getcwd()
+    if not current_dir.endswith('backend') and not current_dir.endswith('backend/'):
+        print(f"Changing to backend directory: {backend_dir}")
+        os.chdir(backend_dir)
+    else:
+        print(f"Already in backend directory: {current_dir}")
+    
+    # Add the backend directory to Python path for imports
+    if backend_dir not in sys.path:
+        sys.path.insert(0, backend_dir)
+        print(f"Added to Python path: {backend_dir}")
     
     # Check and install dependencies if needed
     if not check_dependencies():
@@ -48,13 +60,12 @@ def run_tests():
         print("\nRetrying tests...")
     
     try:
-        # Run pytest with verbose output
+        # Run pytest with configuration file and proper path handling
         result = subprocess.run([
             sys.executable, "-m", "pytest", 
             "tests/", 
-            "-v",  # Verbose output
-            "--tb=short",  # Short traceback format
-        ], check=True)
+            "--config-file=pytest.ini",  # Use pytest configuration
+        ], check=True, cwd=backend_dir)
         
         print("\nAll tests passed!")
         return 0
