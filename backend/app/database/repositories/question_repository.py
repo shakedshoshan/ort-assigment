@@ -8,6 +8,7 @@ from sqlalchemy.orm import Session
 from datetime import datetime
 from ..models.question import Question
 from .base import BaseRepository
+from ...utils.timezone import now_israel
 
 
 class QuestionRepository(BaseRepository[Question]):
@@ -66,7 +67,7 @@ class QuestionRepository(BaseRepository[Question]):
             question.is_closed = 1 if is_closed else 0
             # Set close_date when closing the question
             if is_closed and question.close_date is None:
-                question.close_date = datetime.utcnow()
+                question.close_date = now_israel()
             # Clear close_date when reopening the question
             elif not is_closed:
                 question.close_date = None

@@ -7,6 +7,7 @@ from sqlalchemy import Column, Integer, String, Text, Boolean, DateTime
 from datetime import datetime
 from typing import Optional
 from .base import Base
+from ...utils.timezone import now_israel
 
 
 class Question(Base):
@@ -23,7 +24,7 @@ class Question(Base):
     text = Column(Text, nullable=False)
     access_code = Column(String, nullable=False, unique=True, index=True)
     is_closed = Column(Integer, nullable=False, default=0)  # 0 = False/Open, 1 = True/Closed
-    created_at = Column(DateTime, nullable=False, default=datetime.utcnow)
+    created_at = Column(DateTime, nullable=False, default=now_israel)
     close_date = Column(DateTime, nullable=True, default=None)
     
     def __repr__(self):
