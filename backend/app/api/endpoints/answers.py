@@ -60,7 +60,8 @@ async def get_question_by_code(
     request_data: QuestionAccess = Body(..., description="Student ID in request body"),
     db: Session = Depends(get_db),
     question_service: QuestionService = Depends(get_question_service),
-    student_service: StudentService = Depends(get_student_service)
+    student_service: StudentService = Depends(get_student_service),
+    answer_service: AnswerService = Depends(get_answer_service)
 ) -> Dict[str, Any]:
     """
     Identify and retrieve a question for answering.
@@ -70,7 +71,7 @@ async def get_question_by_code(
         request_data: Student ID in request body
         
     Returns:
-        Question details
+        Question details with existing answer if found
         
     Raises:
         HTTPException: If question not found or student ID invalid
@@ -91,10 +92,16 @@ async def get_question_by_code(
                 detail=f"Question with access code '{access_code}' not found"
             )
         
-        # Return question with student context
+        # Check if student already has an answer for this question
+        existing_answer = answer_service.get_answer_by_access_code_and_student(
+            db, access_code, request_data.student_id
+        )
+        
+        # Return question with student context and existing answer text
         return {
             **question,
-            "student_id": request_data.student_id
+            "student_id": request_data.student_id,
+            "answer": existing_answer.get("text") if existing_answer else None
         }
     except HTTPException as e:
         # Re-raise the exception

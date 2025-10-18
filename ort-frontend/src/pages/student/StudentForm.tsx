@@ -14,6 +14,7 @@ export default function StudentForm() {
   const [accessCode, setAccessCode] = useState('');
   const [studentId, setStudentId] = useState('');
   const [submitted, setSubmitted] = useState(false);
+  const [isUpdate, setIsUpdate] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const handleAccessCodeSubmit = async (accessCode: string, studentId: string) => {
@@ -44,6 +45,7 @@ export default function StudentForm() {
       });
 
       if (result) {
+        setIsUpdate(!!question?.answer);
         setSubmitted(true);
       }
     } catch (err) {
@@ -56,6 +58,7 @@ export default function StudentForm() {
     setAccessCode('');
     setStudentId('');
     setSubmitted(false);
+    setIsUpdate(false);
     setError(null);
   };
 
@@ -68,7 +71,10 @@ export default function StudentForm() {
     return (
       <SuccessMessage
         title="Thank You!"
-        message="Your answer has been submitted successfully. Your response has been recorded."
+        message={isUpdate 
+          ? "Your answer has been updated successfully. Your changes have been recorded."
+          : "Your answer has been submitted successfully. Your response has been recorded."
+        }
         actionText="Submit New Answer"
         onAction={resetForm}
       />
@@ -102,6 +108,7 @@ export default function StudentForm() {
           onSubmit={handleAnswerSubmit}
           loading={submitLoading}
           onBack={() => setQuestion(null)}
+          existingAnswer={question.answer}
         />
       )}
     </div>

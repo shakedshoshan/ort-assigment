@@ -108,6 +108,21 @@ class AnswerService:
         answers = self.answer_repo.get_by_question_id(db, question_id)
         return [self._answer_to_dict(answer) for answer in answers]
     
+    def get_answer_by_access_code_and_student(self, db, access_code: str, student_id: str) -> Optional[Dict[str, Any]]:
+        """
+        Get an answer by access code and student ID.
+        
+        Args:
+            db: Database session
+            access_code: Question access code
+            student_id: Student ID
+            
+        Returns:
+            Answer dictionary if found, None otherwise
+        """
+        answer = self.answer_repo.get_by_access_code_and_student(db, access_code, student_id)
+        return self._answer_to_dict(answer) if answer else None
+    
     def _answer_to_dict(self, answer) -> Dict[str, Any]:
         """
         Convert SQLAlchemy answer object to dictionary.

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { type Question } from '../../types/question';
 
 interface AnswerFormProps {
@@ -6,10 +6,16 @@ interface AnswerFormProps {
   onSubmit: (answerText: string) => Promise<void>;
   loading?: boolean;
   onBack: () => void;
+  existingAnswer?: string | null;
 }
 
-export function AnswerForm({ question, onSubmit, loading = false, onBack }: AnswerFormProps) {
-  const [answerText, setAnswerText] = useState('');
+export function AnswerForm({ question, onSubmit, loading = false, onBack, existingAnswer }: AnswerFormProps) {
+  const [answerText, setAnswerText] = useState(existingAnswer || '');
+
+  // Update answerText when existingAnswer changes
+  useEffect(() => {
+    setAnswerText(existingAnswer || '');
+  }, [existingAnswer]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -43,9 +49,16 @@ export function AnswerForm({ question, onSubmit, loading = false, onBack }: Answ
         </div>
         
         <div className="mb-6">
-          <label htmlFor="answer" className="form-label">
-            Your Answer
-          </label>
+          <div className="flex items-center justify-between mb-2">
+            <label htmlFor="answer" className="form-label">
+              Your Answer
+            </label>
+            {existingAnswer && (
+              <span className="text-sm text-primary-600 font-medium">
+                ✓ You have already answered this question
+              </span>
+            )}
+          </div>
           <textarea
             id="answer"
             className="form-textarea"
@@ -94,10 +107,10 @@ export function AnswerForm({ question, onSubmit, loading = false, onBack }: Answ
             {loading ? (
               <>
                 <div className="loading loading-spinner loading-sm mr-2"></div>
-                Submitting...
+                {existingAnswer ? 'Updating...' : 'Submitting...'}
               </>
             ) : (
-              'Submit Answer'
+              existingAnswer ? 'Update Answer' : 'Submit Answer'
             )}
           </button>
         </div>

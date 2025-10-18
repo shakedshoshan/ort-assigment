@@ -107,3 +107,25 @@ class AnswerRepository(BaseRepository[Answer]):
             Number of answers for the question
         """
         return db.query(self.model).filter(self.model.question_id == question_id).count()
+    
+    def get_by_access_code_and_student(self, db: Session, access_code: str, student_id: str) -> Optional[Answer]:
+        """
+        Get an answer by access code and student ID.
+        This method joins with the questions table to find the answer.
+        
+        Args:
+            db: Database session
+            access_code: Question access code
+            student_id: Student ID
+            
+        Returns:
+            Answer if found, None otherwise
+        """
+        from ..models.question import Question
+        
+        return db.query(self.model).join(
+            Question, self.model.question_id == Question.id
+        ).filter(
+            Question.access_code == access_code,
+            self.model.student_id == student_id
+        ).first()

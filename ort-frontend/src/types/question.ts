@@ -7,6 +7,8 @@ export interface Question {
   created_at: string;
   close_date?: string | null;
   answer_count: number;
+  student_id?: string;
+  answer?: string | null;
 }
 
 export interface QuestionCreate {
