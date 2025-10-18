@@ -1,23 +1,7 @@
 import { Link } from 'react-router-dom';
 import { type Question } from '../../types/question';
 import { DeleteButton } from '../ui';
-
-// Utility function to format the created_at timestamp
-const formatCreatedTime = (createdAt: string): string => {
-  try {
-    const date = new Date(createdAt);
-    return date.toLocaleString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: true
-    });
-  } catch (error) {
-    return 'Unknown time';
-  }
-};
+import { formatCreatedTime, formatCloseTime } from '../../utils/time_format';
 
 interface QuestionCardProps {
   question: Question;
@@ -56,6 +40,14 @@ export function QuestionCard({ question, showActions = true, onDelete, isDeletin
               </svg>
               Created: {formatCreatedTime(question.created_at)}
             </span>
+            {question.close_date && (
+              <span className="flex items-center">
+                <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+                Closed: {formatCloseTime(question.close_date)}
+              </span>
+            )}
             <span className={`badge ${question.is_closed ? 'badge-error' : 'badge-success'}`}>
               {question.is_closed ? 'Closed' : 'Open'}
             </span>

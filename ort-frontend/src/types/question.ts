@@ -5,6 +5,7 @@ export interface Question {
   access_code: string;
   is_closed: boolean;
   created_at: string;
+  close_date?: string | null;
 }
 
 export interface QuestionCreate {
@@ -19,6 +20,7 @@ export interface QuestionResponse {
   text: string;
   access_code: string;
   is_closed: boolean;
+  close_date?: string | null;
   message?: string;
 }
 

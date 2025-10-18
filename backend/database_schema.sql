@@ -8,7 +8,8 @@ CREATE TABLE questions (
     text TEXT NOT NULL,
     access_code TEXT NOT NULL UNIQUE,
     is_closed INTEGER NOT NULL DEFAULT 0,
-    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    close_date DATETIME DEFAULT NULL
 );
 
 -- Create index on title for better query performance

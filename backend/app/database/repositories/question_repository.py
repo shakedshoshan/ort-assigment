@@ -5,6 +5,7 @@ Handles database operations for question entities.
 
 from typing import List, Optional
 from sqlalchemy.orm import Session
+from datetime import datetime
 from ..models.question import Question
 from .base import BaseRepository
 
@@ -63,6 +64,12 @@ class QuestionRepository(BaseRepository[Question]):
         question = self.get(db, question_id)
         if question:
             question.is_closed = 1 if is_closed else 0
+            # Set close_date when closing the question
+            if is_closed and question.close_date is None:
+                question.close_date = datetime.utcnow()
+            # Clear close_date when reopening the question
+            elif not is_closed:
+                question.close_date = None
             db.commit()
             db.refresh(question)
         return question

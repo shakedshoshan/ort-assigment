@@ -6,6 +6,9 @@ import { type Answer } from '../../types/answer';
 import { type StudentAnswer, type SummarizationRequest } from '../../types/ai';
 import { LoadingSpinner } from '../../components/ui';
 import { ErrorAlert } from '../../components/ui';
+import { formatCreatedTime, formatCloseTime } from '../../utils/time_format';
+
+
 
 export default function QuestionView() {
   const { id } = useParams<{ id: string }>();
@@ -149,6 +152,22 @@ export default function QuestionView() {
                 {questionDetails.status}
               </span>
               <span className="text-sm text-neutral-600">Access Code: {questionDetails.access_code}</span>
+            </div>
+            <div className="flex items-center space-x-4 mt-2 text-sm text-neutral-600">
+              <span className="flex items-center">
+                <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                Created: {formatCreatedTime(question.created_at)}
+              </span>
+              {question.close_date && (
+                <span className="flex items-center">
+                  <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                  Closed: {formatCloseTime(question.close_date)}
+                </span>
+              )}
             </div>
           </div>
 

@@ -5,6 +5,7 @@ SQLAlchemy ORM model for question entities in the classroom Q&A application.
 
 from sqlalchemy import Column, Integer, String, Text, Boolean, DateTime
 from datetime import datetime
+from typing import Optional
 from .base import Base
 
 
@@ -23,6 +24,7 @@ class Question(Base):
     access_code = Column(String, nullable=False, unique=True, index=True)
     is_closed = Column(Integer, nullable=False, default=0)  # 0 = False/Open, 1 = True/Closed
     created_at = Column(DateTime, nullable=False, default=datetime.utcnow)
+    close_date = Column(DateTime, nullable=True, default=None)
     
     def __repr__(self):
-        return f"<Question(id={self.id}, title='{self.title}', access_code='{self.access_code}', is_closed={self.is_closed})>"
+        return f"<Question(id={self.id}, title='{self.title}', access_code='{self.access_code}', is_closed={self.is_closed}, close_date={self.close_date})>"

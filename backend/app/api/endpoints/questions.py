@@ -68,6 +68,7 @@ async def create_question(
             "text": question_data.text,
             "access_code": question_data.access_code,
             "is_closed": False,
+            "close_date": None,
             "message": "Question created successfully"
         }
     except HTTPException as e:
@@ -116,8 +117,12 @@ async def close_question(
                 detail="Failed to close question"
             )
         
+        # Get the updated question to return close_date
+        updated_question = service.get_question_by_id(db, question_id)
+        
         return {
             "id": question_id,
+            "close_date": updated_question.get("close_date"),
             "message": "Question closed successfully"
         }
     except HTTPException as e:

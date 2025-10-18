@@ -178,5 +178,6 @@ class QuestionService:
             "text": question.text,
             "access_code": question.access_code,
             "is_closed": bool(question.is_closed),
-            "created_at": question.created_at.isoformat() if question.created_at else None
+            "created_at": question.created_at.isoformat() if question.created_at else None,
+            "close_date": question.close_date.isoformat() if question.close_date else None
         }
