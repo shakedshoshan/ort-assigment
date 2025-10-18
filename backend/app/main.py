@@ -3,6 +3,7 @@ Main FastAPI application module.
 This is the entry point for the FastAPI server.
 """
 
+import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -27,6 +28,11 @@ app = FastAPI(
 @app.on_event("startup")
 async def startup_event():
     """Initialize database tables on application startup."""
+    # Skip database initialization in testing mode
+    if os.getenv("TESTING") == "true":
+        print("🧪 Testing mode - skipping database initialization")
+        return
+    
     try:
         create_tables()
         print("✅ Database initialized successfully")

@@ -41,7 +41,8 @@ jobs:
       run: |
         echo "Setting up test environment..."
         echo "PYTHONPATH=${{ github.workspace }}/backend" >> $GITHUB_ENV
-        echo "DATABASE_PATH=./test.db" >> $GITHUB_ENV
+        echo "DATABASE_PATH=:memory:" >> $GITHUB_ENV
+        echo "TESTING=true" >> $GITHUB_ENV
         echo "CI=true" >> $GITHUB_ENV
         echo "GITHUB_ACTIONS=true" >> $GITHUB_ENV
       

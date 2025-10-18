@@ -2,11 +2,16 @@
 Test configuration and fixtures for the ORT Assignment backend tests.
 """
 
+import os
 import pytest
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import StaticPool
 from fastapi.testclient import TestClient
+
+# Set test environment variables before importing app modules
+os.environ["TESTING"] = "true"
+os.environ["DATABASE_PATH"] = ":memory:"
 
 # Import database models and configuration
 try:

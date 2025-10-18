@@ -21,6 +21,10 @@ def get_database_path() -> str:
     Returns:
         str: Path to the SQLite database file
     """
+    # Check if we're in testing mode
+    if os.getenv("TESTING") == "true" or os.getenv("DATABASE_PATH") == ":memory:":
+        return ":memory:"
+    
     # Get database path from environment variable or use default
     database_path = os.getenv("DATABASE_PATH", "./app.db")
     
@@ -66,6 +70,10 @@ def build_database_url(database_path: str) -> str:
     Returns:
         str: SQLite database URL
     """
+    # Handle in-memory database
+    if database_path == ":memory:":
+        return "sqlite:///:memory:"
+    
     # Convert Windows backslashes to forward slashes for SQLite URL
     normalized_path = str(Path(database_path)).replace('\\', '/')
     
