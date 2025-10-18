@@ -13,17 +13,6 @@ This directory contains GitHub Actions workflows for automated testing and deplo
 - Frontend linting with ESLint
 - Test summary in GitHub Actions summary
 
-### 2. `ci.yml` - Comprehensive CI/CD Pipeline
-**Purpose**: Full CI/CD pipeline with matrix testing and build verification
-**Triggers**: Push and Pull Request events on main/master/develop branches
-**Features**:
-- Matrix testing (Python 3.11/3.12, Node.js 18/20)
-- Backend and frontend tests in parallel
-- Build verification
-- Integration testing
-- Artifact uploads
-- Comprehensive test reporting
-
 ## Test Coverage
 
 Based on the project's testing summary:
