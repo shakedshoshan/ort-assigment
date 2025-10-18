@@ -754,6 +754,20 @@ npm run test
 - **Patterns**: AAA (Arrange, Act, Assert) structure with descriptive test names
 - **Isolation**: Each test runs independently with fresh data
 
+### CI/CD Pipeline
+The project includes automated testing via GitHub Actions that runs on every commit and pull request:
+
+- **Automated Testing**: Backend and frontend tests run automatically
+- **Matrix Testing**: Tests across multiple Python (3.11, 3.12) and Node.js (18, 20) versions
+- **Build Verification**: Ensures both services build and start correctly
+- **Test Reporting**: Detailed test summaries in GitHub Actions
+- **Status Badges**: Visual indicators of test status in repository
+
+**Workflows**:
+- `test.yml`: Simple test runner for quick feedback
+- `ci.yml`: Comprehensive CI/CD pipeline with matrix testing
+- `status.yml`: Workflow status monitoring
+
 ## Technology Stack
 
 - **FastAPI**: Modern Python web framework for building APIs
