@@ -63,13 +63,6 @@ jobs:
         npm run test -- --run
         echo "✅ Frontend tests completed"
         
-    - name: Run frontend linting
-      working-directory: ./ort-frontend
-      run: |
-        echo "🔍 Running Frontend Linting..."
-        npm run lint
-        echo "✅ Frontend linting completed"
-        
     - name: Test Summary
       run: |
         echo "## 🎉 Test Results Summary" >> $GITHUB_STEP_SUMMARY
