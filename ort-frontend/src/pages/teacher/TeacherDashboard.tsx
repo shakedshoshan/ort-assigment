@@ -24,9 +24,15 @@ export default function TeacherDashboard() {
   const [selectedFilter, setSelectedFilter] = useState<FilterOption>('all');
 
   // Convert questions to QuestionItem format for search with enhanced context
+  // Limit to 20 most recent questions for LLM processing to improve efficiency
   const searchableQuestions = useMemo(() => {
     if (!questions) return [];
-    return questions.slice(0, 20).map(q => {
+    // Sort by creation date (most recent first) and take first 20
+    const recentQuestions = [...questions]
+      .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+      .slice(0, 20);
+    
+    return recentQuestions.map(q => {
       // Create enhanced text that includes multiple aspects for better semantic matching
       const enhancedText = [
         q.title,
@@ -97,6 +103,8 @@ export default function TeacherDashboard() {
     }
     
     // Apply search filter if searching
+    // Note: searchResults come from LLM processing of 20 most recent questions,
+    // but we filter the full question list to show all matching questions
     if (hasSearched) {
       if (searchResults.length === 0) return []; // Return empty array when search has no results
       filteredQuestions = filteredQuestions.filter(q => searchResults.includes(q.id));
