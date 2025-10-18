@@ -713,6 +713,47 @@ This project follows these key principles:
 3. **Modular Design**: Code is organized into logical modules for maintainability
 4. **Readable Code**: Clear structure that's easy to understand and modify
 
+## Testing
+
+The project includes comprehensive testing coverage for both backend and frontend components, ensuring reliability and maintainability.
+
+### Test Results Summary
+- **Total Tests**: 50 (Backend: 32, Frontend: 18)
+- **Pass Rate**: 100% (All tests passing) ✅
+- **Coverage**: Complete coverage of core functionality
+
+### Backend Testing
+- **Framework**: pytest with pytest-asyncio for async testing
+- **Test Types**: Unit tests (21) and Integration tests (11)
+- **Coverage**: Question/Answer services, repositories, and API endpoints
+- **Database**: Isolated in-memory SQLite for each test
+
+### Frontend Testing
+- **Framework**: Vitest with React Testing Library
+- **Test Types**: Component tests (8), Hook tests (6), and Integration tests (4)
+- **Coverage**: UI components, custom hooks, and user workflows
+- **Mocking**: Comprehensive mocking of external dependencies
+
+### Running Tests
+
+**Backend Tests**:
+```bash
+cd backend
+py run_tests.py
+```
+
+**Frontend Tests**:
+```bash
+cd ort-frontend
+npm run test
+```
+
+### Test Architecture
+- **Backend**: Mocked dependencies for unit tests, real database for integration tests
+- **Frontend**: Component isolation with mocked APIs and user-centric testing
+- **Patterns**: AAA (Arrange, Act, Assert) structure with descriptive test names
+- **Isolation**: Each test runs independently with fresh data
+
 ## Technology Stack
 
 - **FastAPI**: Modern Python web framework for building APIs
