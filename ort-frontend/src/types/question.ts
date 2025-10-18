@@ -6,6 +6,7 @@ export interface Question {
   is_closed: boolean;
   created_at: string;
   close_date?: string | null;
+  answer_count: number;
 }
 
 export interface QuestionCreate {

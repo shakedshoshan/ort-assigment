@@ -8,25 +8,29 @@ from fastapi import HTTPException
 from datetime import datetime
 try:
     from app.database.repositories.question_repository import QuestionRepository
+    from app.database.repositories.answer_repository import AnswerRepository
 except ImportError:
     # Fallback for direct execution
     import sys
     import os
     sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
     from app.database.repositories.question_repository import QuestionRepository
+    from app.database.repositories.answer_repository import AnswerRepository
 
 
 class QuestionService:
     """Service class for question operations."""
     
-    def __init__(self, question_repo: QuestionRepository):
+    def __init__(self, question_repo: QuestionRepository, answer_repo: AnswerRepository = None):
         """
         Initializes the repository dependency.
         
         Args:
             question_repo: Question repository instance
+            answer_repo: Answer repository instance (optional, creates one if not provided)
         """
         self.question_repo = question_repo
+        self.answer_repo = answer_repo or AnswerRepository()
     
     def create_question(self, db, title: str, text: str, access_code: str) -> int:
         """
@@ -74,10 +78,10 @@ class QuestionService:
             is_closed: Optional filter for closed status
             
         Returns:
-            List of question dictionaries
+            List of question dictionaries with answer count
         """
         questions = self.question_repo.get_all_by_status(db, is_closed)
-        return [self._question_to_dict(q) for q in questions]
+        return [self._question_to_dict_with_answer_count(db, q) for q in questions]
     
     def get_question_by_id(self, db, question_id: int) -> Optional[Dict[str, Any]]:
         """
@@ -180,4 +184,32 @@ class QuestionService:
             "is_closed": bool(question.is_closed),
             "created_at": question.created_at.isoformat() if question.created_at else None,
             "close_date": question.close_date.isoformat() if question.close_date else None
+        }
+    
+    def _question_to_dict_with_answer_count(self, db, question) -> Dict[str, Any]:
+        """
+        Convert SQLAlchemy question object to dictionary with answer count.
+        
+        Args:
+            db: Database session
+            question: SQLAlchemy question object
+            
+        Returns:
+            Question dictionary with answer count
+        """
+        if not question:
+            return None
+        
+        # Get answer count for this question
+        answer_count = self.answer_repo.count_by_question_id(db, question.id)
+        
+        return {
+            "id": question.id,
+            "title": question.title,
+            "text": question.text,
+            "access_code": question.access_code,
+            "is_closed": bool(question.is_closed),
+            "created_at": question.created_at.isoformat() if question.created_at else None,
+            "close_date": question.close_date.isoformat() if question.close_date else None,
+            "answer_count": answer_count
         }

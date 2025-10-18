@@ -33,7 +33,8 @@ class QuestionCreate(BaseModel):
 # Dependency to get question service
 def get_question_service() -> QuestionService:
     """Get question service instance."""
-    return QuestionService(QuestionRepository())
+    from app.database.repositories.answer_repository import AnswerRepository
+    return QuestionService(QuestionRepository(), AnswerRepository())
 
 # Teacher endpoints
 
