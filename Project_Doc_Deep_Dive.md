@@ -410,6 +410,125 @@ uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
 - **Data Validation**: Pydantic models for request/response validation
 - **Business Logic**: Comprehensive validation and error handling
 
+### Backend Folder Structure
+
+The backend follows a clean, layered architecture with clear separation of concerns:
+
+```
+backend/
+├── app/                           # Main application code
+│   ├── __init__.py               # Package initialization
+│   ├── main.py                   # FastAPI application entry point
+│   ├── app.db                    # SQLite database file
+│   │
+│   ├── api/                      # API layer
+│   │   ├── __init__.py
+│   │   ├── api.py                # Main API router configuration
+│   │   └── endpoints/            # API endpoint modules
+│   │       ├── ai.py             # AI endpoints (summarize, smart-search)
+│   │       ├── answers.py        # Answer submission endpoints
+│   │       ├── auth.py           # Authentication endpoints
+│   │       ├── questions.py      # Question management endpoints
+│   │       └── students.py       # Student data endpoints
+│   │
+│   ├── config/                   # Configuration modules
+│   │   └── ai_config.py          # AI service configuration
+│   │
+│   ├── database/                 # Database layer
+│   │   ├── config.py             # Database configuration and connection
+│   │   ├── models/               # SQLAlchemy ORM models
+│   │   │   ├── __init__.py
+│   │   │   ├── base.py           # Base model class
+│   │   │   ├── question.py       # Question model
+│   │   │   └── answer.py         # Answer model
+│   │   └── repositories/         # Data access layer
+│   │       ├── __init__.py
+│   │       ├── base.py           # Base repository class
+│   │       ├── question_repository.py  # Question data operations
+│   │       └── answer_repository.py    # Answer data operations
+│   │
+│   ├── models/                   # Pydantic models for API
+│   │   ├── __init__.py
+│   │   ├── ai_models.py          # AI request/response models
+│   │   └── student.py            # Student data models
+│   │
+│   ├── services/                 # Business logic layer
+│   │   ├── __init__.py
+│   │   ├── ai_service.py         # AI summarization and search logic
+│   │   ├── answer_service.py     # Answer business logic
+│   │   ├── question_service.py   # Question business logic
+│   │   └── student_service.py    # Student data logic
+│   │
+│   └── utils/                    # Utility functions
+│       └── timezone.py           # Timezone handling utilities
+│
+├── tests/                        # Test suite
+│   ├── __init__.py
+│   ├── conftest.py              # Test configuration and fixtures
+│   ├── test_answer_service.py   # Answer service tests
+│   ├── test_answers_api.py      # Answer API endpoint tests
+│   ├── test_question_service.py # Question service tests
+│   ├── test_questions_api.py    # Question API endpoint tests
+│   └── test_repositories.py     # Repository layer tests
+│
+├── requirements.txt              # Python dependencies
+├── pytest.ini                   # pytest configuration
+├── run_tests.py                 # Test runner script
+├── set_db_path.py               # Database path configuration
+├── database_schema.sql          # Database schema definition
+├── Dockerfile                   # Docker configuration
+├── .dockerignore                # Docker ignore file
+├── .gitignore                   # Git ignore file
+├── README.md                    # Backend documentation
+└── DATABASE_ARCHITECTURE.md     # Database architecture documentation
+```
+
+#### **Architecture Layers**
+
+**1. API Layer (`app/api/`)**:
+- **`api.py`**: Main FastAPI router configuration and CORS setup
+- **`endpoints/`**: Individual endpoint modules for each domain
+  - `ai.py`: AI-powered features (summarization, smart search)
+  - `answers.py`: Student answer submission and retrieval
+  - `auth.py`: Teacher authentication
+  - `questions.py`: Question CRUD operations
+  - `students.py`: Student data management
+
+**2. Service Layer (`app/services/`)**:
+- **Business Logic**: Contains all business rules and validation
+- **AI Integration**: OpenAI API communication and processing
+- **Data Orchestration**: Coordinates between repositories and API layer
+
+**3. Repository Layer (`app/database/repositories/`)**:
+- **Data Access**: Abstracted database operations
+- **Query Logic**: Complex database queries and operations
+- **Database Abstraction**: Isolates database-specific code
+
+**4. Data Layer (`app/database/models/`)**:
+- **SQLAlchemy Models**: Database table definitions
+- **Relationships**: Foreign key relationships and constraints
+- **Database Schema**: Table structure and indexes
+
+**5. Configuration (`app/config/`)**:
+- **Environment Settings**: Configuration management
+- **AI Configuration**: OpenAI API settings and parameters
+
+**6. Models (`app/models/`)**:
+- **Pydantic Models**: API request/response validation
+- **Data Transfer Objects**: Clean data structures for API communication
+
+**7. Utilities (`app/utils/`)**:
+- **Helper Functions**: Reusable utility functions
+- **Common Logic**: Shared functionality across the application
+
+#### **Key Design Principles**
+
+- **Separation of Concerns**: Each layer has a specific responsibility
+- **Dependency Injection**: Services depend on abstractions, not concrete implementations
+- **Testability**: Each layer can be tested independently
+- **Maintainability**: Clear structure makes code easy to understand and modify
+- **Scalability**: Architecture supports easy addition of new features
+
 ### API Endpoints
 
 #### General Endpoints
