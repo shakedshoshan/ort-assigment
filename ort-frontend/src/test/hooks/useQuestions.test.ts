@@ -1,3 +1,11 @@
+/**
+ * useQuestions Hook Tests
+ * 
+ * Tests the useQuestions custom hook functionality including:
+ * - Fetching questions from API with proper state management
+ * - Error handling for network failures
+ * - Loading state transitions during data fetching
+ */
 import { renderHook, waitFor } from '@testing-library/react'
 import { beforeEach, it, describe, vi, expect } from 'vitest'
 import { useQuestions } from '../../hooks/useQuestions'

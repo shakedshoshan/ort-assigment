@@ -20,9 +20,14 @@ class StudentService:
             data_file_path: Path to the JSON file containing student data
         """
         if data_file_path is None:
-            # Default path to students.json in the data folder
-            current_dir = os.path.dirname(os.path.abspath(__file__))
-            data_file_path = os.path.join(current_dir, "..", "..", "..", "data", "students.json")
+            # Check if running in Docker container
+            if os.getenv("DOCKER_CONTAINER") == "true":
+                # In Docker, data folder is mounted at /app/data
+                data_file_path = "/app/data/students.json"
+            else:
+                # Default path to students.json in the data folder
+                current_dir = os.path.dirname(os.path.abspath(__file__))
+                data_file_path = os.path.join(current_dir, "..", "..", "..", "data", "students.json")
         self.data_file_path = data_file_path
     
     def _load_students(self) -> List[Dict[str, Any]]:

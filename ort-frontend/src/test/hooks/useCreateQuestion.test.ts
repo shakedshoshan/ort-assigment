@@ -1,3 +1,11 @@
+/**
+ * useCreateQuestion Hook Tests
+ * 
+ * Tests the useCreateQuestion custom hook functionality including:
+ * - Successful question creation with API calls
+ * - Error handling for failed requests
+ * - Loading state management during async operations
+ */
 import { renderHook, waitFor } from '@testing-library/react'
 import { beforeEach, it, describe, vi, expect } from 'vitest'
 import { useCreateQuestion } from '../../hooks/useQuestions'

@@ -1,3 +1,11 @@
+/**
+ * Question Creation Integration Tests
+ * 
+ * Tests the complete question creation workflow including:
+ * - End-to-end form interaction and submission
+ * - Integration between QuestionForm component and useCreateQuestion hook
+ * - Form validation and error handling in real user scenarios
+ */
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { QuestionForm } from '../../components/forms/QuestionForm'

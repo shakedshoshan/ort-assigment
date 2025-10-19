@@ -1,3 +1,11 @@
+/**
+ * QuestionForm Component Tests
+ * 
+ * Tests the QuestionForm component functionality including:
+ * - Form field rendering and user input handling
+ * - Conditional button display based on props
+ * - Form validation and submission behavior
+ */
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { QuestionForm } from '../../components/forms/QuestionForm'

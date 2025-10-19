@@ -1,3 +1,11 @@
+/**
+ * AnswerForm Component Tests
+ * 
+ * Tests the AnswerForm component functionality including:
+ * - Form field rendering and user interaction
+ * - Input validation and form submission
+ * - UI state management
+ */
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { AnswerForm } from '../../components/forms/AnswerForm'

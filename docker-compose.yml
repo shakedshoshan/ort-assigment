@@ -8,6 +8,7 @@ services:
     volumes:
       - ./backend:/app
       - /app/__pycache__
+      - ./data:/app/data
     environment:
       - PYTHONPATH=/app
       - DATABASE_PATH=/app/app.db
