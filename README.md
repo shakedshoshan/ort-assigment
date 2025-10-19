@@ -2,6 +2,11 @@
 
 A modern full-stack application for managing classroom questions and student answers, featuring AI-powered analysis and semantic search capabilities.
 
+<img width="600" height="450" alt="ort002" src="https://github.com/user-attachments/assets/4e5448e7-d617-4f60-ae2e-c9a74b725163" />
+<img width="600" height="450" alt="ort003" src="https://github.com/user-attachments/assets/e87e670e-b597-44ee-9d77-7472b2154d4a" />
+<img width="600" height="450" alt="ort001" src="https://github.com/user-attachments/assets/a6ce1266-3e12-4e17-9afe-7c78a6d0445a" />
+
+
 ## 🚀 Quick Start
 
 ### Local Development
