@@ -520,6 +520,7 @@ backend/
 **7. Utilities (`app/utils/`)**:
 - **Helper Functions**: Reusable utility functions
 - **Common Logic**: Shared functionality across the application
+- **Error Handling**: Centralized error management utility for consistent API responses
 
 #### **Key Design Principles**
 
