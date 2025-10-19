@@ -110,7 +110,8 @@ export default function TeacherDashboard() {
       filteredQuestions = filteredQuestions.filter(q => searchResults.includes(q.id));
     }
     
-    return filteredQuestions;
+    // Sort by creation date (newest first)
+    return filteredQuestions.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
   }, [questions, searchResults, hasSearched, selectedFilter]);
 
   const handleDeleteQuestion = async (questionId: number) => {
