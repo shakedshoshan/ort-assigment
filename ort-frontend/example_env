@@ -1,0 +1,6 @@
+# API Configuration
+VITE_API_QUESTIONS_URL="your question url"
+VITE_API_ANSWERS_URL="your answers url"
+VITE_API_STUDENTS_URL="your student url"
+VITE_API_AI_URL="your ai url"
+VITE_API_AUTH_URL="your auth url"

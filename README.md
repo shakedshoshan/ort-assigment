@@ -168,6 +168,9 @@ OPENAI_MAX_TOKENS=2000
 - `POST /api/v1/ai/summarize` - Generate AI summary
 - `POST /api/v1/ai/smart-search` - Semantic search
 
+## Teacher auth
+- `POST /api/v1/auth/login` - Generate AI summary
+
 ## 🎯 Use Cases
 
 ### For Teachers

@@ -1,0 +1,6 @@
+DATABASE_PATH="database path"
+OPENAI_API_KEY="openai api key"
+
+
+## teacher login:
+TEACHER_PASSCODE="your passcode"
