@@ -1,13 +1,14 @@
 from fastapi import APIRouter, HTTPException
 from ...models.ai_models import SummarizationRequest, SummarizationResponse, SmartSearchRequest, SmartSearchResponse
 from ...services.ai_service import AISummarizationService, AISmartSearchService
+from ...utils.error_handler import handle_unexpected_error
 
 router = APIRouter()
 summarization_service = AISummarizationService()
 smart_search_service = AISmartSearchService()
 
 @router.post("/summarize", response_model=SummarizationResponse)
-def summarize_answers(request: SummarizationRequest) -> SummarizationResponse:
+async def summarize_answers(request: SummarizationRequest) -> SummarizationResponse:
     """
     Generate an AI-powered summary of student answers.
     
@@ -24,13 +25,10 @@ def summarize_answers(request: SummarizationRequest) -> SummarizationResponse:
         summary = summarization_service.generate_summary(request)
         return SummarizationResponse(summary=summary)
     except Exception as e:
-        raise HTTPException(
-            status_code=500,
-            detail=f"Failed to generate summary: {str(e)}"
-        )
+        raise handle_unexpected_error("generate summary", e)
         
 @router.post("/smart-search", response_model=SmartSearchResponse)
-def smart_search(request: SmartSearchRequest) -> SmartSearchResponse:
+async def smart_search(request: SmartSearchRequest) -> SmartSearchResponse:
     """
     Perform a semantic search to find questions matching a natural language query.
     
@@ -47,7 +45,4 @@ def smart_search(request: SmartSearchRequest) -> SmartSearchResponse:
         matching_ids = smart_search_service.find_relevant_questions(request)
         return SmartSearchResponse(matching_question_ids=matching_ids)
     except Exception as e:
-        raise HTTPException(
-            status_code=500,
-            detail=f"Failed to perform smart search: {str(e)}"
-        )
+        raise handle_unexpected_error("perform smart search", e)

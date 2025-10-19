@@ -12,6 +12,7 @@ try:
     from app.database.config import get_db
     from app.services.question_service import QuestionService
     from app.database.repositories.question_repository import QuestionRepository
+    from app.utils.error_handler import handle_unexpected_error, handle_service_error, handle_conflict_exception
 except ImportError:
     # Fallback for direct execution
     import sys
@@ -20,6 +21,7 @@ except ImportError:
     from app.database.config import get_db
     from app.services.question_service import QuestionService
     from app.database.repositories.question_repository import QuestionRepository
+    from app.utils.error_handler import handle_unexpected_error, handle_service_error, handle_conflict_exception
 
 # Create router for questions endpoints
 router = APIRouter()
@@ -77,10 +79,7 @@ async def create_question(
         raise e
     except Exception as e:
         # Handle unexpected errors
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to create question: {str(e)}"
-        )
+        raise handle_unexpected_error("create question", e)
 
 @router.patch("/{question_id}/close", status_code=status.HTTP_200_OK)
 async def close_question(
@@ -105,18 +104,12 @@ async def close_question(
         
         # Check if already closed
         if question.get("is_closed"):
-            raise HTTPException(
-                status_code=status.HTTP_409_CONFLICT,
-                detail="Question is already closed"
-            )
+            raise handle_conflict_exception("Question is already closed")
         
         # Close question
         success = service.close_question(db, question_id)
         if not success:
-            raise HTTPException(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail="Failed to close question"
-            )
+            raise handle_service_error("close question")
         
         # Get the updated question to return close_date
         updated_question = service.get_question_by_id(db, question_id)
@@ -131,10 +124,7 @@ async def close_question(
         raise e
     except Exception as e:
         # Handle unexpected errors
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to close question: {str(e)}"
-        )
+        raise handle_unexpected_error("close question", e)
 
 @router.get("/", status_code=status.HTTP_200_OK)
 async def get_questions(
@@ -168,10 +158,7 @@ async def get_questions(
         return service.get_questions(db, is_closed)
     except Exception as e:
         # Handle unexpected errors
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to retrieve questions: {str(e)}"
-        )
+        raise handle_unexpected_error("retrieve questions", e)
 
 @router.get("/{question_id}/answers", status_code=status.HTTP_200_OK)
 async def get_question_with_answers(
@@ -210,10 +197,7 @@ async def get_question_with_answers(
         raise e
     except Exception as e:
         # Handle unexpected errors
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to retrieve question with answers: {str(e)}"
-        )
+        raise handle_unexpected_error("retrieve question with answers", e)
 
 @router.delete("/{question_id}", status_code=status.HTTP_200_OK)
 async def delete_question(
@@ -237,10 +221,7 @@ async def delete_question(
         # Delete the question
         success = service.delete_question(db, question_id)
         if not success:
-            raise HTTPException(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail="Failed to delete question"
-            )
+            raise handle_service_error("delete question")
         
         return {
             "id": question_id,
@@ -251,10 +232,7 @@ async def delete_question(
         raise e
     except Exception as e:
         # Handle unexpected errors
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to delete question: {str(e)}"
-        )
+        raise handle_unexpected_error("delete question", e)
 
 # Import here to avoid circular imports
 def get_answer_service():

@@ -51,6 +51,7 @@ Frontend (React/TypeScript) ↔ REST API ↔ Backend (FastAPI) ↔ SQLite Databa
 - **Service Layer**: Business logic for questions, answers, and AI features
 - **Repository Layer**: Data access with SQLAlchemy ORM
 - **Data Layer**: SQLite database with proper relationships
+- **Error Handling**: Centralized error management utility for consistent API responses
 
 ### Frontend Architecture
 - **Component-Based**: Modular React components with TypeScript

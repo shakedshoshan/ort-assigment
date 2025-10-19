@@ -15,6 +15,7 @@ try:
     from app.services.student_service import StudentService
     from app.database.repositories.answer_repository import AnswerRepository
     from app.database.repositories.question_repository import QuestionRepository
+    from app.utils.error_handler import handle_not_found_exception, handle_unexpected_error
 except ImportError:
     # Fallback for direct execution
     import sys
@@ -26,6 +27,7 @@ except ImportError:
     from app.services.student_service import StudentService
     from app.database.repositories.answer_repository import AnswerRepository
     from app.database.repositories.question_repository import QuestionRepository
+    from app.utils.error_handler import handle_not_found_exception, handle_unexpected_error
 
 # Create router for answers endpoints
 router = APIRouter()
@@ -79,18 +81,12 @@ async def get_question_by_code(
     try:
         # Validate student ID
         if not student_service.validate_student_id(request_data.student_id):
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail=f"Student with ID '{request_data.student_id}' not found"
-            )
+            raise handle_not_found_exception("Student", request_data.student_id)
         
         # Get question
         question = question_service.get_question_by_code(db, access_code)
         if not question:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail=f"Question with access code '{access_code}' not found"
-            )
+            raise handle_not_found_exception("Question", access_code)
         
         # Check if student already has an answer for this question
         existing_answer = answer_service.get_answer_by_access_code_and_student(
@@ -108,10 +104,7 @@ async def get_question_by_code(
         raise e
     except Exception as e:
         # Handle unexpected errors
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to retrieve question: {str(e)}"
-        )
+        raise handle_unexpected_error("retrieve question", e)
 
 @router.post("/submit", status_code=status.HTTP_200_OK)
 async def submit_answer(
@@ -136,10 +129,7 @@ async def submit_answer(
     try:
         # Validate student ID
         if not student_service.validate_student_id(submission.student_id):
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail=f"Student with ID '{submission.student_id}' not found"
-            )
+            raise handle_not_found_exception("Student", submission.student_id)
         
         # Submit/update answer
         answer = answer_service.submit_or_update_answer(
@@ -164,7 +154,4 @@ async def submit_answer(
         raise e
     except Exception as e:
         # Handle unexpected errors
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to submit answer: {str(e)}"
-        )
+        raise handle_unexpected_error("submit answer", e)

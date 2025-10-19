@@ -7,6 +7,7 @@ from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 import os
 from dotenv import load_dotenv
+from ...utils.error_handler import handle_service_error
 
 # Load environment variables
 load_dotenv()
@@ -34,10 +35,7 @@ async def teacher_login(request: LoginRequest):
     
     # Check if TEACHER_PASSCODE is configured
     if not expected_passcode:
-        raise HTTPException(
-            status_code=500,
-            detail="Teacher authentication not configured. Please set TEACHER_PASSCODE environment variable."
-        )
+        raise handle_service_error("configure teacher authentication - please set TEACHER_PASSCODE environment variable")
     
     # Validate the provided passcode
     if request.passcode == expected_passcode:
