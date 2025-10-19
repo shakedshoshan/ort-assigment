@@ -6,6 +6,10 @@ A modern full-stack application for managing classroom questions and student ans
 <img width="600" height="450" alt="ort003" src="https://github.com/user-attachments/assets/e87e670e-b597-44ee-9d77-7472b2154d4a" />
 <img width="600" height="450" alt="ort001" src="https://github.com/user-attachments/assets/a6ce1266-3e12-4e17-9afe-7c78a6d0445a" />
 
+## Disclaimer
+This repository include the presentation and word files as asked in the instruction of the submission.
+Presentation - ort-assigment-peresntation.pdf
+Work with AI tools Word - ai_tools_insigths.docx
 
 ## 🚀 Quick Start
 
