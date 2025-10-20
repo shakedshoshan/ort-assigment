@@ -515,7 +515,7 @@ backend/
 
 **6. Models (`app/models/`)**:
 - **Pydantic Models**: API request/response validation
-- **Data Transfer Objects**: Clean data structures for API communication
+- **Data Transfer Objects**: Clean data structures for API communications
 
 **7. Utilities (`app/utils/`)**:
 - **Helper Functions**: Reusable utility functions
