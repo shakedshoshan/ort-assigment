@@ -746,6 +746,222 @@ The AI summarization service integrates seamlessly with the existing classroom Q
 - Token limits may affect large numbers of answers
 - Rate limiting applies to frequent usage
 
+## Design Patterns Implementation
+
+This project implements several well-established design patterns from the [Refactoring.Guru Design Patterns Catalog](https://refactoring.guru/design-patterns/catalog), providing a solid architectural foundation for maintainable and scalable code.
+
+### Creational Patterns
+
+#### Factory Method Pattern ✅
+**Purpose**: Creates service instances with proper dependency injection
+**Implementation**: Service factory functions in API endpoints
+
+```python
+def get_question_service() -> QuestionService:
+    """Get question service instance."""
+    from app.database.repositories.answer_repository import AnswerRepository
+    return QuestionService(QuestionRepository(), AnswerRepository())
+```
+
+**Benefits**:
+- Centralized object creation logic
+- Easy to modify dependencies
+- Consistent service initialization
+- Testable with dependency overrides
+
+### Structural Patterns
+
+#### Facade Pattern ✅
+**Purpose**: Provides a simplified interface to complex subsystem operations
+**Implementation**: Service layer hiding repository complexity
+
+```python
+class QuestionService:
+    def __init__(self, question_repo: QuestionRepository, answer_repo: AnswerRepository = None):
+        self.question_repo = question_repo
+        self.answer_repo = answer_repo or AnswerRepository()
+    
+    def create_question(self, db, title: str, text: str, access_code: str) -> int:
+        # Complex business logic hidden behind simple interface
+        existing_question = self.get_question_by_code(db, access_code)
+        if existing_question:
+            raise HTTPException(status_code=400, detail=f"Question with access code '{access_code}' already exists")
+        # ... business logic
+```
+
+**Benefits**:
+- Hides complexity of data access and business logic
+- Provides clean API for endpoints
+- Encapsulates multiple repository operations
+- Makes the system easier to use and understand
+
+### Behavioral Patterns
+
+#### Template Method Pattern ✅
+**Purpose**: Defines the skeleton of an algorithm with customizable steps
+**Implementation**: AI service base class with common request structure
+
+```python
+class AIBaseService:
+    def _make_openai_request(self, messages: List[dict], json_response: bool = False) -> Any:
+        # Common template for AI requests
+        url = "https://api.openai.com/v1/chat/completions"
+        headers = {"Authorization": f"Bearer {self.config.OPENAI_API_KEY}"}
+        # ... common request logic
+    
+    def _format_system_prompt(self) -> str:
+        # Abstract method to be implemented by subclasses
+        raise NotImplementedError
+
+class AISummarizationService(AIBaseService):
+    def _format_system_prompt(self) -> str:
+        return """You are an advanced educational analysis assistant..."""
+```
+
+**Benefits**:
+- Common AI request structure with customizable steps
+- Reduces code duplication
+- Easy to add new AI services
+- Consistent error handling across AI operations
+
+#### Strategy Pattern ✅
+**Purpose**: Enables interchangeable algorithms for different AI processing needs
+**Implementation**: Different AI services implementing different strategies
+
+```python
+class AISummarizationService(AIBaseService):
+    def generate_summary(self, request: SummarizationRequest) -> str:
+        # Summarization strategy
+        messages = [
+            {"role": "system", "content": self._format_system_prompt()},
+            {"role": "user", "content": self._format_user_prompt(request)}
+        ]
+        return self._make_openai_request(messages)
+
+class AISmartSearchService(AIBaseService):
+    def find_relevant_questions(self, request: SmartSearchRequest) -> List[int]:
+        # Search strategy
+        messages = [
+            {"role": "system", "content": self._format_system_prompt()},
+            {"role": "user", "content": self._format_user_prompt(request)}
+        ]
+        return self._make_openai_request(messages, json_response=True)
+```
+
+**Benefits**:
+- Interchangeable AI processing strategies
+- Easy to add new AI algorithms
+- Runtime strategy selection
+- Clean separation of different AI concerns
+
+### Architectural Patterns
+
+#### Repository Pattern ✅
+**Purpose**: Abstracts data access logic and provides a uniform interface
+**Implementation**: Generic base repository with specific implementations
+
+```python
+class BaseRepository(Generic[ModelType]):
+    def get(self, db: Session, id: int) -> Optional[ModelType]:
+        return db.query(self.model).filter(self.model.id == id).first()
+    
+    def create(self, db: Session, obj_in: dict) -> ModelType:
+        db_obj = self.model(**obj_in)
+        db.add(db_obj)
+        db.commit()
+        db.refresh(db_obj)
+        return db_obj
+
+class QuestionRepository(BaseRepository[Question]):
+    def get_by_access_code(self, db: Session, access_code: str) -> Optional[Question]:
+        return db.query(self.model).filter(self.model.access_code == access_code).first()
+```
+
+**Benefits**:
+- Clean data access abstraction
+- Consistent CRUD operations
+- Easy to mock for testing
+- Database-agnostic business logic
+
+
+### React-Specific Patterns
+
+#### Custom Hooks Pattern ✅
+**Purpose**: Encapsulates reusable stateful logic
+**Implementation**: Custom hooks for API integration
+
+**Benefits**:
+- Reusable stateful logic
+- Consistent API interaction patterns
+- Easy to test and mock
+- Separation of concerns
+
+#### Higher-Order Component (HOC) Pattern ✅
+**Purpose**: Enhances components with additional functionality
+**Implementation**: Authentication guard component
+
+```typescript
+export function AuthGuard({ children, fallback }: AuthGuardProps) {
+  const { isAuthenticated, isLoading } = useAuth();
+
+  if (isLoading) {
+    return <LoadingSpinner />;
+  }
+
+  if (!isAuthenticated) {
+    return fallback || <TeacherLogin />;
+  }
+
+  return <>{children}</>;
+}
+
+// Usage
+<AuthGuard>
+  <TeacherDashboard />
+</AuthGuard>
+```
+
+**Benefits**:
+- Reusable authentication logic
+- Clean component composition
+- Easy to apply to multiple components
+- Separation of authentication concerns
+
+### Pattern Benefits Summary
+
+#### **Code Quality**
+- **Maintainability**: Clear patterns make code easy to understand and modify
+- **Testability**: Dependency injection and repository pattern enable easy testing
+- **Reusability**: Custom hooks and HOCs promote code reuse
+- **Consistency**: Established patterns ensure consistent implementation
+
+#### **Architecture Benefits**
+- **Separation of Concerns**: Each pattern has a specific responsibility
+- **Loose Coupling**: Dependency injection reduces component dependencies
+- **High Cohesion**: Related functionality is grouped together
+- **Scalability**: Patterns support easy addition of new features
+
+#### **Development Benefits**
+- **Developer Experience**: Familiar patterns reduce learning curve
+- **Error Reduction**: Type safety and clear interfaces prevent common mistakes
+- **Documentation**: Patterns serve as self-documenting code
+- **Team Collaboration**: Standard patterns improve team understanding
+
+### Pattern Integration
+
+These patterns work together to create a cohesive architecture:
+
+1. **Factory Method** creates services with proper dependencies
+2. **Dependency Injection** provides these services to endpoints
+3. **Repository Pattern** abstracts data access for services
+4. **Facade Pattern** simplifies complex operations
+5. **Template Method** provides common AI request structure
+6. **Strategy Pattern** enables different AI algorithms
+7. **Custom Hooks** manage frontend state and API calls
+8. **HOC Pattern** adds cross-cutting concerns like authentication
+
+This combination creates a robust, maintainable, and scalable application architecture that follows industry best practices and design principles.
+
 ## Development Principles
 
 This project follows these key principles:
@@ -754,6 +970,7 @@ This project follows these key principles:
 2. **Documentation**: Key parts of the system are well-documented
 3. **Modular Design**: Code is organized into logical modules for maintainability
 4. **Readable Code**: Clear structure that's easy to understand and modify
+5. **Design Patterns**: Implementation of proven design patterns for maintainable architecture
 
 ## Testing
 

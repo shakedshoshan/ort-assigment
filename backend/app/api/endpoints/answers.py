@@ -106,7 +106,7 @@ async def get_question_by_code(
         # Handle unexpected errors
         raise handle_unexpected_error("retrieve question", e)
 
-@router.post("/submit", status_code=status.HTTP_200_OK)
+@router.post("/submit", status_code=status.HTTP_200_OK) 
 async def submit_answer(
     submission: AnswerSubmission,
     db: Session = Depends(get_db),

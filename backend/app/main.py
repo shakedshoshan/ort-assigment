@@ -28,13 +28,13 @@ app = FastAPI(
 @app.on_event("startup")
 async def startup_event():
     """Initialize database tables on application startup."""
-    # Skip database initialization in testing mode
+    # Skip database initialization in testing mode (uses in-memory DB)
     if os.getenv("TESTING") == "true":
         print("🧪 Testing mode - skipping database initialization")
         return
     
     try:
-        create_tables()
+        create_tables()  # Create all SQLAlchemy tables from models
         print("✅ Database initialized successfully")
     except Exception as e:
         print(f"❌ Database initialization failed: {e}")
@@ -44,10 +44,10 @@ async def startup_event():
 # Add CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # In production, specify actual origins
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_origins=["*"],  # Allow all origins (frontend domains) - restrict in production
+    allow_credentials=True,  # Allow cookies/auth headers in requests
+    allow_methods=["*"],  # Allow all HTTP methods (GET, POST, PUT, DELETE, etc.)
+    allow_headers=["*"],  # Allow all request headers (Content-Type, Authorization, etc.)
 )
 
 # Import routers
@@ -77,22 +77,22 @@ def run_dev():
     """Run the FastAPI server in development mode with auto-reload."""
     import uvicorn
     uvicorn.run(
-        "app.main:app",
-        host="0.0.0.0",
-        port=8000,
-        reload=True,
-        reload_dirs=["app"]
+        "app.main:app",  # Module path to FastAPI app instance
+        host="0.0.0.0",  # Listen on all network interfaces
+        port=8000,  # Default port for API
+        reload=True,  # Auto-reload on code changes
+        reload_dirs=["app"]  # Watch only app directory for changes
     )
 
-def run_prod():
-    """Run the FastAPI server in production mode."""
-    import uvicorn
-    uvicorn.run(
-        "app.main:app",
-        host="0.0.0.0",
-        port=8000,
-        workers=1
-    )
+# def run_prod():
+#     """Run the FastAPI server in production mode."""
+#     import uvicorn
+#     uvicorn.run(
+#         "app.main:app",  # Module path to FastAPI app instance
+#         host="0.0.0.0",  # Listen on all network interfaces
+#         port=8000,  # Default port for API
+#         workers=1  # Single worker process (SQLite doesn't support multiple workers)
+#     )
 
 if __name__ == "__main__":
     run_dev()
