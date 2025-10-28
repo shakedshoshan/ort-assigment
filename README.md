@@ -34,8 +34,8 @@ cd ort-assignment
 docker-compose up --build
 
 # Access the application
-# Frontend: http://localhost:5173
-# Backend API: http://localhost:8000
+# Front-end: http://localhost:5173
+# Back-end API: http://localhost:8000
 
 ```
 
